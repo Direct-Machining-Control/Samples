@@ -1,7 +1,7 @@
 # Samples
 Various plugin samples for DMC laser machine and process control software.
 
-[How to make DMC plugin.pdf](/How to make DMC plugin.pdf) - Short description of plugin creation procedure.
+[How to make DMC plugin.pdf](/How%20to%20make%20DMC%20plugin.pdf) - Short description of plugin creation procedure.
 
 ## Plugin samples List
 

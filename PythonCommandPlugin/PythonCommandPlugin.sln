@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32413.511
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonCommandPlugin", "PythonCommandPlugin\PythonCommandPlugin.csproj", "{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}"
+EndProject
+Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "DMC", "..\..\..\bin\Debug\DMC.exe", "{0E55010F-EE13-4DAF-81DF-D689EB70B655}"
+	ProjectSection(DebuggerProjectSystem) = preProject
+		PortSupplier = 00000000-0000-0000-0000-000000000000
+		Executable = D:\DMC\bin\Debug\DMC.exe
+		RemoteMachine = ELIJUS-NK
+		StartingDirectory = D:\DMC\bin\Debug
+		Environment = Default
+		LaunchingEngine = 00000000-0000-0000-0000-000000000000
+		UseLegacyDebugEngines = No
+		LaunchSQLEngine = No
+		AttachLaunchAction = No
+		IORedirection = Auto
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\..\..\Core\Core.csproj", "{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Debug|x64.Build.0 = Debug|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Debug|x86.Build.0 = Debug|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Release|x64.ActiveCfg = Release|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Release|x64.Build.0 = Release|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Release|x86.ActiveCfg = Release|Any CPU
+		{BE4BC28E-A127-49C0-9EE6-537EB71DD0EC}.Release|x86.Build.0 = Release|Any CPU
+		{0E55010F-EE13-4DAF-81DF-D689EB70B655}.Debug|Any CPU.ActiveCfg = Release|x86
+		{0E55010F-EE13-4DAF-81DF-D689EB70B655}.Debug|x64.ActiveCfg = Release|x86
+		{0E55010F-EE13-4DAF-81DF-D689EB70B655}.Debug|x86.ActiveCfg = Release|x86
+		{0E55010F-EE13-4DAF-81DF-D689EB70B655}.Release|Any CPU.ActiveCfg = Release|x86
+		{0E55010F-EE13-4DAF-81DF-D689EB70B655}.Release|x64.ActiveCfg = Release|x86
+		{0E55010F-EE13-4DAF-81DF-D689EB70B655}.Release|x86.ActiveCfg = Release|x86
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Debug|x64.ActiveCfg = Debug|x64
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Debug|x64.Build.0 = Debug|x64
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Debug|x86.Build.0 = Debug|Any CPU
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Release|x64.ActiveCfg = Release|x64
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Release|x64.Build.0 = Release|x64
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{E2BE27B2-E1B6-460A-9E76-7F7E991C99E1}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F569FC81-794C-4FE5-A234-F3F85898EC12}
+	EndGlobalSection
+EndGlobal

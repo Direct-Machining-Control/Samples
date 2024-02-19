@@ -9,7 +9,6 @@ Various plugin samples for DMC laser machine and process control software.
 [CustomDLPPlugin](/CustomDLPPlugin/) - DLP device.  
 [CVSamplePlugin](/CVSamplePlugin/) -  
 [HatchingPlugin](/HatchingPlugin/) - Custom hatching.  
-[InnoLasPlugin](/InnoLasPlugin/) -  
 [JoinAndHatchPlugin](/JoinAndHatchPlugin/) -  
 [LaserPlugin](/LaserPlugin/) - Laser device.  
 [PythonCommandPlugin](/PythonCommandPlugin/) - Python command.  

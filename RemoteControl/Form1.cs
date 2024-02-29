@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 
@@ -45,7 +46,7 @@ namespace RemoteControl
 
         void Connect()
         {
-            if (client.Connect())
+            if (client.Connect(IPAddress.Loopback))
             {
                 comboBoxRecipe.Text = client.GetActiveRecipe();
                 buttonRun.Text = "Run";
@@ -53,6 +54,7 @@ namespace RemoteControl
 
                 ReadGalvoSettings();
 
+                //client.SetWindow(RCMClient.WindowType.PREVIEW, panel_preview);
             }
         }
 
@@ -61,10 +63,11 @@ namespace RemoteControl
             while (!close)
             {
                 double position = 0;
-                if (client.GetPosition(axis1_letter.Text, out position))
+                string error_message = string.Empty;
+                if (client.GetPosition(axis1_letter.Text, out position, ref error_message))
                     actual_axis1_position.Invoke(new Action(() => { actual_axis1_position.Text = position.ToString(); }));
 
-                if (client.GetPosition(axis2_letter.Text, out position))
+                if (client.GetPosition(axis2_letter.Text, out position, ref error_message))
                     actual_axis2_position.Invoke(new Action(() => { actual_axis2_position.Text = position.ToString(); }));
 
                 this.Invoke(new Action(() => { labelSConnected.Text = "Connected: " + (client.IsConnectedToHardware ? "Yes" : "No"); }));
@@ -87,19 +90,54 @@ namespace RemoteControl
                 comboBoxRecipe.Items.Add(fn);
         }
 
+        public static void Sample1()
+        {
+            RCMClient client = new RCMClient();
+            if (!client.Connect(IPAddress.Loopback))
+                return;
+
+            string error_message = string.Empty;
+            if (!client.ConnectToHardware(ref error_message))
+            {
+                System.Windows.Forms.MessageBox.Show("Unable to connect to hardware. " + error_message);
+                return;
+            }
+
+            if (!client.RecipeLoad(@"C:\Recipes\Recipe1.rcp", ref error_message))
+            {
+                System.Windows.Forms.MessageBox.Show("Unable to load recipe. " + error_message);
+                return;
+            }
+
+            string error_msg = "";
+            if (!client.RecipeRunSync(ref error_msg))
+            {
+                MessageBox.Show(error_msg);
+                return;
+            }
+            System.Windows.Forms.MessageBox.Show("Recipe completed. ");
+        }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
             if (client.IsConnected) {
                 if (!client.IsConnectedToHardware)
                 {
-                    if (!client.ConnectToHardware())
+                    string error_message = string.Empty;
+                    if (!client.ConnectToHardware(ref error_message))
                     {
-                        System.Windows.Forms.MessageBox.Show("Unable to connect to hardware. " + client.Response);
+                        System.Windows.Forms.MessageBox.Show("Unable to connect to hardware. " + error_message);
                         return;
                     }
                 }
-                client.RecipeRun(); autorun = checkBoxAutorun.Checked;
+                //client.RecipeRun();
+
+                string msg = "";
+                if (!client.RecipeRunSync(ref msg))
+                    MessageBox.Show(msg);
+
+                autorun = checkBoxAutorun.Checked;
             }
             else Connect();
         }
@@ -114,7 +152,8 @@ namespace RemoteControl
                 label1.Text = status;
                 if (client.IsRecipeIdle && autorun)
                 {
-                    client.RecipeRun();
+                    string error_message = string.Empty;
+                    client.RecipeRun(ref error_message);
 
                     System.Threading.Thread.Sleep(100);
                     //client.Send("VIEW FITSCREEN");
@@ -131,10 +170,11 @@ namespace RemoteControl
         void ReadGalvoSettings()
         {
             double value = 0;
-            if (client.GetGalvo(1, RCMClient.GalvoSettings.offset_x, out value)) Log("Galvo offset X: " + value.ToString("0.###"));
+            string error_message = string.Empty;
+            if (client.GetGalvo(1, RCMClient.GalvoSettings.offset_x, out value, ref error_message)) Log("Galvo offset X: " + value.ToString("0.###"));
             else Log("Galvo offset X read error");
 
-            if (client.GetGalvo(1, RCMClient.GalvoSettings.offset_y, out value)) Log("Galvo offset Y: " + value.ToString("0.###"));
+            if (client.GetGalvo(1, RCMClient.GalvoSettings.offset_y, out value, ref error_message)) Log("Galvo offset Y: " + value.ToString("0.###"));
             else Log("Galvo offset Y read error");
         }
 
@@ -157,7 +197,8 @@ namespace RemoteControl
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            if (client.IsConnected) { client.RecipeCancel(); autorun = false; }
+            string error_message = string.Empty;
+            if (client.IsConnected) { client.RecipeCancel(ref error_message); autorun = false; }
         }
 
         private void checkBoxAutorun_CheckedChanged(object sender, EventArgs e)
@@ -169,9 +210,10 @@ namespace RemoteControl
         {
             if (client.IsConnected && comboBoxRecipe.Text.Length > 0)
             {
-                client.RecipeUnloadAll();
-                if (!client.RecipeLoad(comboBoxRecipe.Text))
-                    System.Windows.Forms.MessageBox.Show("Unable to select recipe. " + client.Response);
+                string error_message = string.Empty;
+                client.RecipeUnloadAll(ref error_message);
+                if (!client.RecipeLoad(comboBoxRecipe.Text, ref error_message))
+                    System.Windows.Forms.MessageBox.Show("Unable to select recipe. " + error_message);
             }
         }
 
@@ -211,6 +253,12 @@ namespace RemoteControl
                 }
             }
             catch (Exception) { }
+        }
+
+        private void checksum_checkbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(client != null)
+                client.UseChecksum = client.UseMessageID = checksum_checkbox.Checked;
         }
     }
 }

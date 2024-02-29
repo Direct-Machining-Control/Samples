@@ -59,6 +59,8 @@
             this.labelSError = new System.Windows.Forms.Label();
             this.labelSRecipeRunning = new System.Windows.Forms.Label();
             this.use_log = new System.Windows.Forms.CheckBox();
+            this.panel_preview = new System.Windows.Forms.Panel();
+            this.checksum_checkbox = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.move1_to)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.move2_to)).BeginInit();
@@ -379,11 +381,31 @@
             this.use_log.UseVisualStyleBackColor = true;
             this.use_log.CheckedChanged += new System.EventHandler(this.use_log_CheckedChanged);
             // 
+            // panel_preview
+            // 
+            this.panel_preview.Location = new System.Drawing.Point(888, 12);
+            this.panel_preview.Name = "panel_preview";
+            this.panel_preview.Size = new System.Drawing.Size(337, 254);
+            this.panel_preview.TabIndex = 16;
+            // 
+            // checksum_checkbox
+            // 
+            this.checksum_checkbox.AutoSize = true;
+            this.checksum_checkbox.Location = new System.Drawing.Point(103, 12);
+            this.checksum_checkbox.Name = "checksum_checkbox";
+            this.checksum_checkbox.Size = new System.Drawing.Size(98, 17);
+            this.checksum_checkbox.TabIndex = 19;
+            this.checksum_checkbox.Text = "Use Checksum";
+            this.checksum_checkbox.UseVisualStyleBackColor = true;
+            this.checksum_checkbox.CheckedChanged += new System.EventHandler(this.checksum_checkbox_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(895, 503);
+            this.ClientSize = new System.Drawing.Size(1377, 503);
+            this.Controls.Add(this.checksum_checkbox);
+            this.Controls.Add(this.panel_preview);
             this.Controls.Add(this.use_log);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -444,6 +466,8 @@
         private System.Windows.Forms.Label labelSError;
         private System.Windows.Forms.Label labelSRecipeRunning;
         private System.Windows.Forms.CheckBox use_log;
+        private System.Windows.Forms.Panel panel_preview;
+        private System.Windows.Forms.CheckBox checksum_checkbox;
     }
 }
 

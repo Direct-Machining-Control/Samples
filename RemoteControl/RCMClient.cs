@@ -1067,6 +1067,55 @@ namespace RemoteControl
             }
             return true;
         }
+        /// <summary>
+        /// Saves active recipe
+        /// </summary>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if active recipe was saved, otherwise false</returns>
+        public bool RecipeSave(ref string error_message)
+        {
+            string received = SendReceive(ns, $"RECIPE_SAVE");
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+        /// <summary>
+        /// Saves active or loaded recipe to specified path
+        /// </summary>
+        /// <param name="full_path">Full path ("C:/TMP/recipe.rcp")</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if recipe was saved, otherwise false</returns>
+        public bool RecipeSaveAs(string full_path, ref string error_message, string loaded_recipe_title = null)
+        {
+            string received = "";
+            if (loaded_recipe_title != null)
+                received = SendReceive(ns, $"RECIPE_SAVE_AS \"{full_path}\" \"{loaded_recipe_title}\"");
+            else
+                received = SendReceive(ns, $"RECIPE_SAVE_AS \"{full_path}\"");
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+        /// <summary>
+        /// Get IO tool value
+        /// </summary>
+        /// <param name="io_name">IO tool name</param>
+        /// <returns>Returns current IO tool value</returns>
+        public string GetInput(string io_name)
+        {
+            return SendReceive(ns, $"GET_INPUT {io_name}");
+        }
+        /// <summary>
+        /// Set IO output value
+        /// </summary>
+        /// <param name="io_name">IO tool name</param>
+        /// <param name="new_value">Value to set</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if value has been set, otherwise false</returns>
+        public bool SetOutput(string io_name, double new_value, ref string error_message)
+        {
+            string received = SendReceive(ns, $"SET_OUTPUT {io_name} {new_value}");
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
         #endregion
     }
 

@@ -1083,6 +1083,7 @@ namespace RemoteControl
         /// </summary>
         /// <param name="full_path">Full path ("C:/TMP/recipe.rcp")</param>
         /// <param name="error_message">Error message</param>
+        /// <param name="loaded_recipe_title">Specify loaded recipe title, which needs to be saved, otherwise active recipe will be used</param>
         /// <returns>Returns true if recipe was saved, otherwise false</returns>
         public bool RecipeSaveAs(string full_path, ref string error_message, string loaded_recipe_title = null)
         {
@@ -1116,13 +1117,986 @@ namespace RemoteControl
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
+
+        /// <summary>
+        /// Creates a line geometry and adds it to the recipe
+        /// </summary>
+        /// <param name="parameters">Rectangle geometry parameters</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if geometry has been added, otherwise false</returns>
+        public bool AddLine(LineParameters parameters, ref string error_message)
+        {
+            string received = SendReceive(ns, "ADD LINE " + parameters.ToString());
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a circle geometry and adds it to the recipe
+        /// </summary>
+        /// <param name="parameters">Rectangle geometry parameters</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if geometry has been added, otherwise false</returns>
+        public bool AddCircle(CircleParameters parameters, ref string error_message)
+        {
+            string received = SendReceive(ns, "ADD CIRCLE " + parameters.ToString());
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a rectangle geometry and adds it to the recipe
+        /// </summary>
+        /// <param name="parameters">Rectangle geometry parameters</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if geometry has been added, otherwise false</returns>
+        public bool AddRectangle(RectangleParameters parameters, ref string error_message)
+        {
+            string received = SendReceive(ns, "ADD RECTANGLE " + parameters.ToString());
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a text geometry and adds it to the recipe
+        /// </summary>
+        /// <param name="parameters">Text geometry parameters</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if geometry has been added, otherwise false</returns>
+        public bool AddText(TextParameters parameters, ref string error_message)
+        {
+            string received = SendReceive(ns, "ADD TEXT " + parameters.ToString());
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+        /// <summary>
+        /// Creates a text geometry and adds it to the recipe
+        /// </summary>
+        /// <param name="parameters">Barcode geometry parameters</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if geometry has been added, otherwise false</returns>
+        public bool AddBarcode(BarcodeParameters parameters, ref string error_message)
+        {
+            string received = SendReceive(ns, "ADD BARCODE " + parameters.ToString());
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+        /// <summary>
+        /// Creates a wrapping 4d command and adds it to the recipe
+        /// </summary>
+        /// <param name="parameters">Wrapping 4d parameters</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if command has been added, otherwise false</returns>
+        public bool AddWrapping4D(Wrapping4d_Parameters parameters, ref string error_message)
+        {
+            string received = SendReceive(ns, "ADD WRAPPING_4D " + parameters.ToString());
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
         #endregion
+    } 
+    /// <summary>
+    /// Data class used with RCMClient method AddLine
+    /// </summary>
+    public class LineParameters
+    {
+        /// <summary>
+        /// Start X position
+        /// </summary>
+        public double StartX { get; set; }
+        /// <summary>
+        /// Start Y position
+        /// </summary>
+        public double StartY { get; set; }
+        /// <summary>
+        /// Start Z position
+        /// </summary>
+        public double StartZ { get; set; }
+        /// <summary>
+        /// End X position
+        /// </summary>
+        public double EndX { get; set; }
+        /// <summary>
+        /// End Y position
+        /// </summary>
+        public double EndY { get; set; }
+        /// <summary>
+        /// End Z position
+        /// </summary>
+        public double EndZ { get; set; }
+        /// <summary>
+        /// Title of the recipe command (Optional parameter)
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Parent name (Optional parameter)
+        /// </summary>
+        public string Parent { get; set; }
+        /// <summary>
+        /// Creates circle parameters
+        /// </summary>
+        /// <param name="startX">Start X position</param>
+        /// <param name="startY">Start Y position</param>
+        /// <param name="startZ">Start Z position</param>
+        /// <param name="endX">End X position</param>
+        /// <param name="endY">End Y position</param>
+        /// <param name="endZ">End Z position</param>
+        public LineParameters(double startX, double startY, double startZ, double endX, double endY, double endZ)
+        {
+            StartX = startX;
+            StartY = startY;
+            StartZ = startZ;
+            EndX = endX;
+            EndY = endY;
+            EndZ = endZ;
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("x1:{0} y1:{1} z1:{2} x2:{3} y2:{4} z2:{5}",
+                            StartX, StartY, StartZ, EndX, EndY, EndZ);
+
+            if (!string.IsNullOrWhiteSpace(Title))
+                sb.AppendFormat(" title:{0}", Title);
+
+            if (!string.IsNullOrWhiteSpace(Parent))
+                sb.AppendFormat(" parent:{0}", Parent);
+
+            return sb.ToString();
+        }
     }
+    /// <summary>
+    /// Data class used with RCMClient method AddCircle
+    /// </summary>
+    public class CircleParameters
+    {
+        /// <summary>
+        /// Radius
+        /// </summary>
+        public double Radius { get; set; }
+        /// <summary>
+        /// Position on X axis
+        /// </summary>
+        public double PositionX { get; set; }
+        /// <summary>
+        /// Position on Y axis
+        /// </summary>
+        public double PositionY { get; set; }
+        /// <summary>
+        /// Position on Z axis
+        /// </summary>
+        public double PositionZ { get; set; }
+        /// <summary>
+        /// Title of the recipe command (Optional parameter)
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Parent name (Optional parameter)
+        /// </summary>
+        public string Parent { get; set; }
+        /// <summary>
+        /// Start angle
+        /// </summary>
+        public double? StartAngle { get; set; }
+        /// <summary>
+        /// Clockwise or counter clockwise
+        /// </summary>
+        public bool? Clockwise { get; set; }
+        /// <summary>
+        /// Reference point (Optional parameter)
+        /// </summary>
+        public ReferencePoint? ReferencePoint { get; set; }
 
+        /// <summary>
+        /// Creates circle parameters
+        /// </summary>
+        /// <param name="radius">Radius</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        public CircleParameters(double radius, double positionX, double positionY, double positionZ)
+        {
+            Radius = radius;
+            PositionX = positionX;
+            PositionY = positionY;
+            PositionZ = positionZ;
+        }
 
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("radius:{0} positioning.position_x:{1} positioning.position_y:{2} positioning.position_z:{3}",
+                            Radius, PositionX, PositionY, PositionZ);
 
+            if (!string.IsNullOrWhiteSpace(Title))
+                sb.AppendFormat(" title:{0}", Title);
 
+            if (!string.IsNullOrWhiteSpace(Parent))
+                sb.AppendFormat(" parent:{0}", Parent);
 
+            if (StartAngle.HasValue)
+                sb.AppendFormat(" start_angle:{0}", StartAngle.Value);
+
+            if (Clockwise.HasValue)
+                sb.AppendFormat(" cw:{0}", Clockwise.Value);
+
+            if (ReferencePoint.HasValue)
+                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Data class used with RCMClient method AddRectangle
+    /// </summary>
+    public class RectangleParameters
+    {
+        /// <summary>
+        /// Width
+        /// </summary>
+        public double SizeX { get; set; }
+        /// <summary>
+        /// Height
+        /// </summary>
+        public double SizeY { get; set; }
+        /// <summary>
+        /// Position on X axis
+        /// </summary>
+        public double PositionX { get; set; }
+        /// <summary>
+        /// Position on Y axis
+        /// </summary>
+        public double PositionY { get; set; }
+        /// <summary>
+        /// Position on Z axis
+        /// </summary>
+        public double PositionZ { get; set; }
+        /// <summary>
+        /// Title of the recipe command (Optional parameter)
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Parent name (Optional parameter)
+        /// </summary>
+        public string Parent { get; set; }
+        /// <summary>
+        /// Rotation around Z axis (Optional parameter)
+        /// </summary>
+        public double? RotateZ { get; set; }
+        /// <summary>
+        /// Reference point (Optional parameter)
+        /// </summary>
+        public ReferencePoint? ReferencePoint { get; set; }
+
+        /// <summary>
+        /// Creates rectangle parameters
+        /// </summary>
+        /// <param name="sizeX">Width</param>
+        /// <param name="sizeY">Height</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        public RectangleParameters(double sizeX, double sizeY, double positionX, double positionY, double positionZ)
+        {
+            SizeX = sizeX;
+            SizeY = sizeY;
+            PositionX = positionX;
+            PositionY = positionY;
+            PositionZ = positionZ;
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("size_x:{0} size_y:{1} positioning.position_x:{2} positioning.position_y:{3} positioning.position_z:{4}",
+                            SizeX, SizeY, PositionX, PositionY, PositionZ);
+
+            if (!string.IsNullOrWhiteSpace(Title))
+                sb.AppendFormat(" title:{0}", Title);
+
+            if (!string.IsNullOrWhiteSpace(Parent))
+                sb.AppendFormat(" parent:{0}", Parent);
+
+            if (RotateZ.HasValue)
+                sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
+
+            if (ReferencePoint.HasValue)
+                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Data class used with RCMClient method AddText
+    /// </summary>
+    public class TextParameters
+    {
+        /// <summary>
+        /// Text input
+        /// </summary>
+        public string Text { get; set; }
+        /// <summary>
+        /// Text font
+        /// </summary>
+        public string Font { get; set; }
+        /// <summary>
+        /// Size
+        /// </summary>
+        public double Size { get; set; }
+        /// <summary>
+        /// Position on X axis
+        /// </summary>
+        public double PositionX { get; set; }
+        /// <summary>
+        /// Position on Y axis
+        /// </summary>
+        public double PositionY { get; set; }
+        /// <summary>
+        /// Position on Z axis
+        /// </summary>
+        public double PositionZ { get; set; }
+        /// <summary>
+        /// Title of the recipe command (Optional parameter)
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Parent name (Optional parameter)
+        /// </summary>
+        public string Parent { get; set; }
+        /// <summary>
+        /// Rotation around Z axis (Optional parameter)
+        /// </summary>
+        public double? RotateZ { get; set; }
+        /// <summary>
+        /// Reference point (Optional parameter)
+        /// </summary>
+        public ReferencePoint? ReferencePoint { get; set; }
+        /// <summary>
+        /// Font is bold (Optional parameter)
+        /// </summary>
+        public bool? FontBold { get; set; }
+        /// <summary>
+        /// Font is italic (Optional parameter)
+        /// </summary>
+        public bool? FontItalic { get; set; }
+        /// <summary>
+        /// Enable custom spacing (Optional parameter)
+        /// </summary>
+        public bool? CustomSpacing { get; set; }
+        /// <summary>
+        /// Letter spacing (%) (Optional parameter)
+        /// </summary>
+        public double? LetterSpacing { get; set; }
+        /// <summary>
+        /// Line spacing (%) (Optional parameter)
+        /// </summary>
+        public double? LineSpacing { get; set; }
+        /// <summary>
+        /// Horizontal scaling (%) (Optional parameter)
+        /// </summary>
+        public double? HScale { get; set; }
+        /// <summary>
+        /// Creates text parameters
+        /// </summary>
+        /// <param name="text">Text input</param>
+        /// <param name="font">Text font</param>
+        /// <param name="size">Text size</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        /// <exception cref="ArgumentNullException">Text and font cannot be null</exception>
+        public TextParameters(string text, string font, double size, double positionX, double positionY, double positionZ)
+        {
+            if (string.IsNullOrWhiteSpace(text)) throw new ArgumentNullException(nameof(text), "Text can't be null or empty.");
+            if (string.IsNullOrWhiteSpace(font)) throw new ArgumentNullException(nameof(font), "Font can't be null or empty.");
+
+            Text = text;
+            Font = font;
+            Size = size;
+            PositionX = positionX;
+            PositionY = positionY;
+            PositionZ = positionZ;
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("text:{0} font:{1} size:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
+                            Text, Font, Size, PositionX, PositionY, PositionZ);
+
+            if (!string.IsNullOrWhiteSpace(Title))
+                sb.AppendFormat(" title:{0}", Title);
+
+            if (!string.IsNullOrWhiteSpace(Parent))
+                sb.AppendFormat(" parent:{Parent}", Parent);
+
+            if (RotateZ.HasValue)
+                sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
+
+            if (ReferencePoint.HasValue)
+                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+
+            if (FontBold.HasValue)
+                sb.AppendFormat(" font_bold:{0}", FontBold.Value);
+
+            if (FontItalic.HasValue)
+                sb.AppendFormat(" font_italic:{0}", FontItalic.Value);
+
+            if (CustomSpacing.HasValue)
+                sb.AppendFormat(" custom_spacing:{0}", CustomSpacing.Value);
+
+            if (LetterSpacing.HasValue)
+                sb.AppendFormat(" letter_spacing:{0}", LetterSpacing.Value);
+
+            if (LineSpacing.HasValue)
+                sb.AppendFormat(" line_spacing:{0}", LineSpacing.Value);
+
+            if (HScale.HasValue)
+                sb.AppendFormat(" hscale:{0}", HScale.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Data class used with RCMClient method AddBarcode
+    /// </summary>
+    public class BarcodeParameters
+    {
+        /// <summary>
+        /// Text input
+        /// </summary>
+        public string Text { get; set; }
+        /// <summary>
+        /// Format
+        /// </summary>
+        public string Format { get; set; }
+        /// <summary>
+        /// Width
+        /// </summary>
+        public double Width { get; set; }
+        /// <summary>
+        /// Position on X axis
+        /// </summary>
+        public double PositionX { get; set; }
+        /// <summary>
+        /// Position on Y axis
+        /// </summary>
+        public double PositionY { get; set; }
+        /// <summary>
+        /// Position on Z axis
+        /// </summary>
+        public double PositionZ { get; set; }
+        /// <summary>
+        /// Title of the recipe command (Optional parameter)
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Parent name (Optional parameter)
+        /// </summary>
+        public string Parent { get; set; }
+        /// <summary>
+        /// Rotation around Z axis (Optional parameter)
+        /// </summary>
+        public double? RotateZ { get; set; }
+        /// <summary>
+        /// Reference point (Optional parameter)
+        /// </summary>
+        public ReferencePoint? ReferencePoint { get; set; }
+        /// <summary>
+        /// Point mode (Optional parameter)
+        /// </summary>
+        public bool? PointMode { get;set; }
+        /// <summary>
+        /// Render point as (Optional parameter)
+        /// </summary>
+        public RenderPointAs? RenderPointAs { get; set; }
+        /// <summary>
+        /// Aspect ratio (Optional parameter)
+        /// </summary>
+        public double? AspectRatio { get; set; }
+        /// <summary>
+        /// Invert code (Optional parameter)
+        /// </summary>
+        public bool? Invert { get; set; }
+        /// <summary>
+        /// No of Pulses (Optional parameter)
+        /// </summary>
+        public double? NoOfPulses { get; set; }
+        /// <summary>
+        /// Sorting (Optional parameter)
+        /// </summary>
+        public Sorting? Sorting { get; set; }
+        /// <summary>
+        /// Point size (Optional parameter)
+        /// </summary>
+        public double? PointSize { get; set; }
+        /// <summary>
+        /// Margin Size X (cells) (Optional parameter)
+        /// </summary>
+        public double? MarginSizeX { get; set; }
+        /// <summary>
+        /// Margin Size Y (cells) (Optional parameter)
+        /// </summary>
+        public double? MarginSizeY { get; set; }
+
+        /// <summary>
+        /// Creates barcode parameters
+        /// </summary>
+        /// <param name="text">Text input</param>
+        /// <param name="format">Text format</param>
+        /// <param name="size">Text size</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        /// <exception cref="ArgumentNullException">Text and format cannot be null</exception>
+        public BarcodeParameters(string text, string format, double width, double positionX, double positionY, double positionZ)
+        {
+            if (string.IsNullOrWhiteSpace(text)) throw new ArgumentNullException(nameof(text), "Text can't be null or empty.");
+            if (string.IsNullOrWhiteSpace(format)) throw new ArgumentNullException(nameof(format), "Format can't be null or empty.");
+
+            Text = text;
+            Format = format;
+            Width = width;
+            PositionX = positionX;
+            PositionY = positionY;
+            PositionZ = positionZ;
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("text:{0} format:{1} width:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
+                            Text, Format, Width, PositionX, PositionY, PositionZ);
+
+            if (!string.IsNullOrEmpty(Title))
+                sb.AppendFormat(" title:{0}", Title);
+
+            if (!string.IsNullOrEmpty(Parent))
+                sb.AppendFormat(" parent:{0}", Parent);
+
+            if (RotateZ.HasValue)
+                sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
+
+            if (ReferencePoint.HasValue)
+                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+
+            if (PointMode.HasValue)
+                sb.AppendFormat(" point_mode:{0}", PointMode.Value);
+
+            if (RenderPointAs.HasValue)
+                sb.AppendFormat(" renderPointsAs:{0}", (int)RenderPointAs.Value);
+
+            if (AspectRatio.HasValue)
+                sb.AppendFormat(" aspect:{0}", AspectRatio.Value);
+
+            if (Invert.HasValue)
+                sb.AppendFormat(" invert:{0}", Invert.Value);
+
+            if (NoOfPulses.HasValue)
+                sb.AppendFormat(" no_of_pulses:{0}", NoOfPulses.Value);
+
+            if (Sorting.HasValue)
+                sb.AppendFormat(" sorting:{0}", (int)Sorting.Value);
+
+            if (PointSize.HasValue)
+                sb.AppendFormat(" pointSize:{0}", PointSize.Value);
+
+            if (MarginSizeX.HasValue)
+                sb.AppendFormat(" marginSizeX:{0}", MarginSizeX.Value);
+
+            if (MarginSizeY.HasValue)
+                sb.AppendFormat(" marginSizeY:{0}", MarginSizeY.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Barcode CODE_128 Parameters Data Class
+    /// </summary>
+    /// <remarks>
+    /// <para>This class introduces the following new properties:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="GS1Format"/></description></item>
+    /// </list>
+    /// <para>For inherited properties, see <see cref="BarcodeParameters"/>.</para>
+    /// </remarks>
+    public class Barcode_CODE_128_Parameters : BarcodeParameters
+    {
+        private const string DefaultFormat = "CODE_128";
+        /// <summary>
+        /// Use GS1-128 / EAN-128 Format (Optional parameter)
+        /// </summary>
+        public bool? GS1Format { get; set; }
+        /// <summary>
+        /// Creates CODE_128 format barcode parameters
+        /// </summary>
+        /// <param name="text">Text input</param>
+        /// <param name="width">Width</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        public Barcode_CODE_128_Parameters(string text, double width, double positionX, double positionY, double positionZ) : base(text, DefaultFormat, width, positionX, positionY, positionZ)
+        {
+
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(base.ToString());
+
+            if (GS1Format.HasValue)
+                sb.AppendFormat(" gs1format:{0}", GS1Format.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Barcode DATA_MATRIX Parameters Data Class
+    /// </summary>
+    /// <remarks>
+    /// <para>This class introduces the following new properties:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="ForceRectangularCodeShape"/></description></item>
+    /// <item><description><see cref="SetCodeSize"/></description></item>
+    /// <item><description><see cref="CodeSizeIndex"/></description></item>
+    /// <item><description><see cref="Encodation"/></description></item>
+    /// </list>
+    /// <para>For inherited properties, see <see cref="BarcodeParameters"/>.</para>
+    /// </remarks>
+    public class Barcode_DATA_MATRIX_Parameters : BarcodeParameters
+    {
+        private const string DefaultFormat = "DATA_MATRIX";
+        /// <summary>
+        /// Code Shape (Optional parameter)
+        /// </summary>
+        /// <remarks>True=rectangular, false=square</remarks>
+        public bool? ForceRectangularCodeShape { get; set; }
+        /// <summary>
+        /// Set Code Size (Optional parameter)
+        /// </summary>
+        public bool? SetCodeSize { get; set; }
+        /// <summary>
+        /// Code Size (Optional parameter)
+        /// </summary>
+        /// <remarks>
+        /// <para>Valid values when ForceRectangularCodeShape=true:</para>
+        /// <para>0="18x8", 1="32x8", 2="26x12", 3="36x12", 4="36x16", 5="48x16"</para>
+        /// <para>Valid values when ForceRectangularCodeShape=false:</para>
+        /// <para>0="10x10", 1="12x12", 2="14x14", 3="16x16", 4="18x18", 5="20x20", 6="22x22", 7="24x24", 8="26x26",</para>
+        /// <para>9="32x32", 10="36x36", 11="40x40", 12="44x44", 13="48x48", 14="52x52", 15="64x64", 16="72x72", 17="80x80", 18="88x88",</para>
+        /// <para>19="96x96", 20="104x104", 21="120x120", 22="132x132", 23="144x144"</para>
+        /// </remarks>
+        public int? CodeSizeIndex { get; set; }
+        /// <summary>
+        /// Encodation (Optional parameter)
+        /// </summary>
+        /// <remarks>Valid values: 0="ASCII", 1="C40", 2="TEXT", 3="X16", 4="EDIFACT", 5="BASE256", 6="AUTO"</remarks>
+        public int? Encodation { get; set; }
+        /// <summary>
+        /// Creates DATA_MATRIX format barcode parameters
+        /// </summary>
+        /// <param name="text">Text input</param>
+        /// <param name="width">Width</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        public Barcode_DATA_MATRIX_Parameters(string text, double width, double positionX, double positionY, double positionZ) : base(text, DefaultFormat, width, positionX, positionY, positionZ)
+        {
+
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(base.ToString());
+
+            if (ForceRectangularCodeShape.HasValue)
+                sb.AppendFormat(" forceRectangularCodeShape:{0}", ForceRectangularCodeShape.Value);
+
+            if (SetCodeSize.HasValue)
+                sb.AppendFormat(" dmSetCodeSize:{0}", SetCodeSize.Value);
+
+            if (CodeSizeIndex.HasValue)
+                sb.AppendFormat(" dmSetCodeSizeIndex:{0}", CodeSizeIndex.Value);
+
+            if (Encodation.HasValue)
+                sb.AppendFormat(" dmEncodation:{0}", Encodation.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Barcode QR_CODE Parameters Data Class
+    /// </summary>
+    /// <remarks>
+    /// <para>This class introduces the following new properties:</para>
+    /// <list type="bullet">
+    /// <item><description><see cref="ErrorCorrectionLevel"/></description></item>
+    /// <item><description><see cref="Version"/></description></item>
+    /// </list>
+    /// <para>For inherited properties, see <see cref="BarcodeParameters"/>.</para>
+    /// </remarks>
+    public class Barcode_QR_CODE_Parameters : BarcodeParameters
+    {
+        private const string DefaultFormat = "QR_CODE";
+
+        /// <summary>
+        /// Error Correction Level (Optional parameter)
+        /// </summary>
+        /// <remarks>Valid values: 0="L", 1="M", 2="Q", 3="H"</remarks>
+        public int? ErrorCorrectionLevel { get; set; }
+        /// <summary>
+        /// Version
+        /// </summary>
+        public QRCodeVersion? Version { get; set; }
+        /// <summary>
+        /// Creates QR_CODE format barcode parameters
+        /// </summary>
+        /// <param name="text">Text input</param>
+        /// <param name="width">Width</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        public Barcode_QR_CODE_Parameters(string text, double width, double positionX, double positionY, double positionZ) : base(text, DefaultFormat, width, positionX, positionY, positionZ)
+        {
+
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(base.ToString());
+
+            if (ErrorCorrectionLevel.HasValue)
+                sb.AppendFormat(" errorCorrectionLevel:{0}", ErrorCorrectionLevel.Value);
+
+            if (Version.HasValue)
+                sb.AppendFormat(" qrCodeVersion:{0}", Version.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Wrapping 4D Data Class
+    /// </summary>
+    public class Wrapping4d_Parameters
+    {
+        /// <summary>
+        /// Rotary radius
+        /// </summary>
+        public double RotaryRadius { get; set; }
+        /// <summary>
+        /// Position on X axis
+        /// </summary>
+        public double PositionX { get; set; }
+        /// <summary>
+        /// Position on Y axis
+        /// </summary>
+        public double PositionY { get; set; }
+        /// <summary>
+        /// Position on Z axis
+        /// </summary>
+        public double PositionZ { get; set; }
+        /// <summary>
+        /// Title of the recipe command (Optional parameter)
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// Reference point (Optional parameter)
+        /// </summary>
+        public ReferencePoint? ReferencePoint { get; set; }
+
+        /// <summary>
+        /// Creates wrapping 4d parameters
+        /// </summary>
+        /// <param name="rotary_radius">Rotary radius</param>
+        /// <param name="positionX">Position on X axis</param>
+        /// <param name="positionY">Position on Y axis</param>
+        /// <param name="positionZ">Position on Z axis</param>
+        public Wrapping4d_Parameters(double rotary_radius, double positionX, double positionY, double positionZ)
+        {
+            this.RotaryRadius = rotary_radius;
+            this.PositionX = positionX;
+            this.PositionY = positionY;
+            this.PositionZ = positionZ;
+        }
+
+        /// <summary>
+        /// Converts an object to a string that contains all of the object's properties and their values, if they have a value.
+        /// </summary>
+        /// <returns>Returns a string of current object properties</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("radius:{0} positioning.position_x:{1} positioning.position_y:{2} positioning.position_z:{3}",
+                            RotaryRadius, PositionX, PositionY, PositionZ);
+
+            if (!string.IsNullOrWhiteSpace(Title))
+                sb.AppendFormat(" title:{0}", Title);
+
+            if (ReferencePoint.HasValue)
+                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+
+            return sb.ToString();
+        }
+    }
+    /// <summary>
+    /// Sorting options
+    /// </summary>
+    public enum Sorting
+    {
+        /// <summary>
+        /// Sorted 
+        /// </summary>
+        Sorted,
+        /// <summary>
+        /// Bidirectional
+        /// </summary>
+        Bidirectional,
+        /// <summary>
+        /// Distributed
+        /// </summary>
+        Distributed,
+        /// <summary>
+        /// Not Sorted
+        /// </summary>
+        Not_Sorted
+    }
+    /// <summary>
+    /// Barcode parameter RenderPointAs
+    /// </summary>
+    public enum RenderPointAs
+    {
+        /// <summary>
+        /// Render as points
+        /// </summary>
+        Points = 0,
+        /// <summary>
+        /// Render as rectangles
+        /// </summary>
+        Rectangles = 1,
+        /// <summary>
+        /// Render as circles
+        /// </summary>
+        Circles = 2
+    }
+    /// <summary>
+    /// Reference point parameter, which is used in geometry
+    /// </summary>
+    public enum ReferencePoint : int
+    {
+        /// <summary>
+        /// Reference point is top left
+        /// </summary>
+        TopLeft = 0,
+        /// <summary>
+        /// Reference point is top center
+        /// </summary>
+        TopCenter = 1,
+        /// <summary>
+        /// Reference point is top right
+        /// </summary>
+        TopRight = 2,
+        /// <summary>
+        /// Reference point is middle left
+        /// </summary>
+        MiddleLeft = 3,
+        /// <summary>
+        /// Reference point is middle center
+        /// </summary>
+        MiddleCenter = 4,
+        /// <summary>
+        /// Reference point is middle right
+        /// </summary>
+        MiddleRight = 5,
+        /// <summary>
+        /// Reference point is bottom left
+        /// </summary>
+        BottomLeft = 6,
+        /// <summary>
+        /// Reference point is bottom center
+        /// </summary>
+        BottomCenter = 7,
+        /// <summary>
+        /// Reference point is bottom right
+        /// </summary>
+        BottomRight = 8,
+    }
+    /// <summary>
+    /// QR_CODE version parameter
+    /// </summary>
+    public enum QRCodeVersion
+    {
+        /// <summary>
+        /// AUTO
+        /// </summary>
+        Auto = 0,
+        /// <summary>
+        /// Version 1
+        /// </summary>
+        Version_1 = 1,
+        /// <summary>
+        /// Version 2
+        /// </summary>
+        Version_2 = 2,
+        /// <summary>
+        /// Version 3
+        /// </summary>
+        Version_3 = 3,
+        /// <summary>
+        /// Version 4
+        /// </summary>
+        Version_4 = 4,
+        /// <summary>
+        /// Version 10
+        /// </summary>
+        Version_10 = 10,
+        /// <summary>
+        /// Version 25
+        /// </summary>
+        Version_25 = 25,
+        /// <summary>
+        /// Version 40
+        /// </summary>
+        Version_40 = 40
+    }
 
     static class WinHelper
     {

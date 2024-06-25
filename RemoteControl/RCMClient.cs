@@ -1262,10 +1262,10 @@ namespace RemoteControl
                             StartX, StartY, StartZ, EndX, EndY, EndZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:{0}", Title);
+                sb.AppendFormat(" title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:{0}", Parent);
+                sb.AppendFormat(" parent:\"{0}\"", Parent);
 
             return sb.ToString();
         }
@@ -1338,10 +1338,10 @@ namespace RemoteControl
                             Radius, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:{0}", Title);
+                sb.AppendFormat(" title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:{0}", Parent);
+                sb.AppendFormat(" parent:\"{0}\"", Parent);
 
             if (StartAngle.HasValue)
                 sb.AppendFormat(" start_angle:{0}", StartAngle.Value);
@@ -1425,10 +1425,10 @@ namespace RemoteControl
                             SizeX, SizeY, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:{0}", Title);
+                sb.AppendFormat(" title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:{0}", Parent);
+                sb.AppendFormat(" parent:\"{0}\"", Parent);
 
             if (RotateZ.HasValue)
                 sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
@@ -1538,14 +1538,14 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("text:{0} font:{1} size:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
+            sb.AppendFormat("text:\"{0}\" font:\"{1}\" size:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
                             Text, Font, Size, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:{0}", Title);
+                sb.AppendFormat(" title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:{Parent}", Parent);
+                sb.AppendFormat(" parent:\"{0}\"", Parent);
 
             if (RotateZ.HasValue)
                 sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
@@ -1686,14 +1686,14 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("text:{0} format:{1} width:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
+            sb.AppendFormat("text:\"{0}\" format:\"{1}\" width:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
                             Text, Format, Width, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrEmpty(Title))
-                sb.AppendFormat(" title:{0}", Title);
+                sb.AppendFormat(" title:\"{0}\"", Title);
 
             if (!string.IsNullOrEmpty(Parent))
-                sb.AppendFormat(" parent:{0}", Parent);
+                sb.AppendFormat(" parent:\"{0}\"", Parent);
 
             if (RotateZ.HasValue)
                 sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
@@ -1717,7 +1717,7 @@ namespace RemoteControl
                 sb.AppendFormat(" no_of_pulses:{0}", NoOfPulses.Value);
 
             if (Sorting.HasValue)
-                sb.AppendFormat(" sorting:{0}", (int)Sorting.Value);
+                sb.Append($" sorting:\"{Sorting.Value}\"".Replace('_', ' '));
 
             if (PointSize.HasValue)
                 sb.AppendFormat(" pointSize:{0}", PointSize.Value);

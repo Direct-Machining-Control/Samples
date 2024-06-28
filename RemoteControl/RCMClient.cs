@@ -1170,7 +1170,7 @@ namespace RemoteControl
             return true;
         }
         /// <summary>
-        /// Creates a text geometry and adds it to the recipe
+        /// Creates a barcode geometry and adds it to the recipe
         /// </summary>
         /// <param name="parameters">Barcode geometry parameters</param>
         /// <param name="error_message">Error message</param>
@@ -1233,7 +1233,7 @@ namespace RemoteControl
         /// </summary>
         public string Parent { get; set; }
         /// <summary>
-        /// Creates circle parameters
+        /// Creates line parameters
         /// </summary>
         /// <param name="startX">Start X position</param>
         /// <param name="startY">Start Y position</param>

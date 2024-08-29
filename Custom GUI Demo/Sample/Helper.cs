@@ -69,6 +69,7 @@ namespace Sample
                 Base.Functions.FixForm(f);
                 f.Show();
                 main_form.Hide();
+                DMC.Actions.SetDisplayPanel(null, null);
                 //MainForm.form.UnsubscribeActions();
             }
             catch (Exception ex)

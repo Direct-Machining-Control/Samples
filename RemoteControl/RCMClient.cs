@@ -1193,6 +1193,18 @@ namespace RemoteControl
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
+        /// <summary>
+        /// Load DMC settings file
+        /// </summary>
+        /// <param name="path_hrd">Path to the hrd file</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if successfully loaded settings, otherwise false</returns>
+        public bool LoadSettings(string path_hrd, ref string error_message)
+        {
+            string received = SendReceive(ns, $"LOAD_SETTINGS {path_hrd}");
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
         #endregion
     } 
     /// <summary>

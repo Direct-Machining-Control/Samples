@@ -39,7 +39,8 @@ namespace Sample
             bool settings_loaded = Base.Settings.LoadSettings();
             Base.SystemDevices.ApplySettings();
 
-            
+            Core.Tools.ToolPositioning.ShowAdditionalTools = false; // Hides scale/rotate options in context menu
+
             Base.View.Update();
         }
 
@@ -70,6 +71,7 @@ namespace Sample
                 f.Show();
                 main_form.Hide();
                 DMC.Actions.SetDisplayPanel(null, null);
+                
                 //MainForm.form.UnsubscribeActions();
             }
             catch (Exception ex)

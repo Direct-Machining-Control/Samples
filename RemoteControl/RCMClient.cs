@@ -1205,6 +1205,43 @@ namespace RemoteControl
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
+
+        /// <summary>
+        /// Gets the amount of values remaining in queue or total amount
+        /// </summary>
+        /// <param name="variable_name">Queue variable name</param>
+        /// <param name="value">0 (values left in queue) or 1 (total values that have been in queue)</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if info was successfully returned, otherwise false</returns>
+        public bool QueueCount(string queue_name, string value, ref string error_message)
+        {
+            string received = SendReceive(ns, $"QUEUE_COUNT {queue_name} {value}");
+            if (!received.StartsWith("OK"))
+            {
+                error_message = received;
+                return false;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Adds value(-s) to the end of a queue variable
+        /// </summary>
+        /// <param name="variable_name">Queue variable name</param>
+        /// <param name="value">value to push (multiple values can be added by using spaces)</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if value(-s) have been added to the queue, otherwise false</returns>
+        public bool Queue(string queue_name, string value, ref string error_message)
+        {
+            string received = SendReceive(ns, $"QUEUE {queue_name} {value}");
+            if (!received.StartsWith("OK"))
+            {
+                error_message = received;
+                return false;
+            }
+            return true;
+        }
         #endregion
     } 
     /// <summary>

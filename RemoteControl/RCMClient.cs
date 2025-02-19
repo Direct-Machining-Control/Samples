@@ -1242,6 +1242,28 @@ namespace RemoteControl
             }
             return true;
         }
+
+        /// <summary>
+        /// Save DMC settings file
+        /// </summary>
+        /// <param name="file_path">File path to which to save. If empty, saves to the current one</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if the settings were saved successfully, otherwise false</returns>
+        public bool SaveSettings(string file_path, ref string error_message)
+        {
+            string message = "";
+            if (string.IsNullOrEmpty(file_path))
+                message = "SAVE_SETTINGS";
+            else message = "SAVE_SETTINGS " + file_path;
+
+            string received = SendReceive(ns, message);
+            if (!received.StartsWith("OK"))
+            {
+                error_message = received;
+                return false;
+            }
+            return true;
+        }
         #endregion
     } 
     /// <summary>

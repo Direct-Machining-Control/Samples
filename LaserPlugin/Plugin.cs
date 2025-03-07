@@ -13,7 +13,7 @@ namespace LaserPlugin
     {
         public static Plugin plugin = null;
         public Settings settings = new Settings(); // Settings that are visible in File->Settings->My Laser
-        List<DMC.IFormTool> tools = new List<DMC.IFormTool>(); // Add GUI tools
+        List<IFormTool> tools = new List<IFormTool>(); // Add GUI tools
         ToolGUI tool_gui = null;
         StatusGUI tool_status = null;
 
@@ -22,13 +22,13 @@ namespace LaserPlugin
             plugin = this;
 
             // Add option to add command into recipe 
-            DMC.IFormTool cmd = DMC.Helpers.AddTool(DMC.ToolLocation.HomeTab, ICommand.AddCreator(typeof(Command), "my_laser", "Devices"), "My Laser");
+            IFormTool cmd = DMC.Helpers.AddTool(DMC.ToolLocation.HomeTab, ICommand.AddCreator(typeof(Command), "my_laser", "Devices"), "My Laser");
             cmd.SetImage(Properties.Resources.laser16, false);
 
             Add(cmd);
         }
 
-        private void Add(DMC.IFormTool tool) 
+        private void Add(IFormTool tool) 
         { 
             if (tool != null) tools.Add(tool); 
         }
@@ -62,7 +62,7 @@ namespace LaserPlugin
                 // Connect to device using user defined settings
                 return true;
             }
-            catch (Exception ex) { return Functions.Error("Unable to connect to " + GetName(), ex); }
+            catch (Exception ex) { return Functions.Error(this, "Unable to connect to " + GetName(), ex); }
         }
 
         public bool ApplySettings()

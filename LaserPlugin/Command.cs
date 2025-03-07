@@ -52,17 +52,17 @@ namespace LaserPlugin
 
             if (set_pp_frequency.value)
             {
-                if (pp_frequency.number < 200 || pp_frequency.number > 10000) return Base.Functions.Error("'" + pp_frequency.title + "' must be in [200kHz..10000kHz] range!");
+                if (pp_frequency.number < 200 || pp_frequency.number > 10000) return Base.Functions.Error(this, "'" + pp_frequency.title + "' must be in [200kHz..10000kHz] range!");
             }
 
             if (set_mod_frequency.value)
             {
-                if (mod_frequency.number < 200 || mod_frequency.number > 10000) return Base.Functions.Error("'" + mod_frequency.title + "' must be in [200kHz..10000kHz] range!");
+                if (mod_frequency.number < 200 || mod_frequency.number > 10000) return Base.Functions.Error(this, "'" + mod_frequency.title + "' must be in [200kHz..10000kHz] range!");
             }
 
             if (set_mod_efficiency.value)
             {
-                if (mod_efficiency.number < 0 || mod_efficiency.number > 100) return Base.Functions.Error("'" + mod_efficiency.title + "' must be in [0%..100%] range!");
+                if (mod_efficiency.number < 0 || mod_efficiency.number > 100) return Base.Functions.Error(this, "'" + mod_efficiency.title + "' must be in [0%..100%] range!");
             }
             return true;
         }
@@ -135,7 +135,7 @@ namespace LaserPlugin
             }
             catch (Exception ex)
             {
-                return Base.Functions.Error("Unable to run My Laser command. ", ex);
+                return Base.Functions.Error(this, "Unable to run My Laser command. ", ex);
             }
         }
     }

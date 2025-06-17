@@ -1209,7 +1209,7 @@ namespace RemoteControl
         /// <summary>
         /// Gets the amount of values remaining in queue or total amount
         /// </summary>
-        /// <param name="variable_name">Queue variable name</param>
+        /// <param name="queue_name">Queue variable name</param>
         /// <param name="value">0 (values left in queue) or 1 (total values that have been in queue)</param>
         /// <param name="error_message">Error message</param>
         /// <returns>Returns true if info was successfully returned, otherwise false</returns>
@@ -1228,7 +1228,7 @@ namespace RemoteControl
         /// <summary>
         /// Adds value(-s) to the end of a queue variable
         /// </summary>
-        /// <param name="variable_name">Queue variable name</param>
+        /// <param name="queue_name">Queue variable name</param>
         /// <param name="value">value to push (multiple values can be added by using spaces)</param>
         /// <param name="error_message">Error message</param>
         /// <returns>Returns true if value(-s) have been added to the queue, otherwise false</returns>
@@ -1732,7 +1732,7 @@ namespace RemoteControl
         /// </summary>
         /// <param name="text">Text input</param>
         /// <param name="format">Text format</param>
-        /// <param name="size">Text size</param>
+        /// <param name="width">Text size</param>
         /// <param name="positionX">Position on X axis</param>
         /// <param name="positionY">Position on Y axis</param>
         /// <param name="positionZ">Position on Z axis</param>

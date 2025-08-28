@@ -12,6 +12,21 @@ namespace RemoteControl.Classes
     /// <summary>
     /// MJPEG Stream Reader class
     /// </summary>
+    /// <remarks>
+    /// <example>
+    /// Example how to initialize <see cref="MJPEGStreamReader"/>
+    /// <code>
+    /// MJPEGStreamReader _streamReader;
+    /// ...
+    /// private void InitializeStreamReader()
+    /// {
+    ///     _streamReader = new MJPEGStreamReader();= new MJPEGStreamReader();
+    ///     _streamReader.FrameReceived += OnFrameReceived;
+    ///     _streamReader.ConnectionStatusChanged += OnConnectionStatusChanged;
+    /// }
+    /// </code>
+    /// </example>
+    /// </remarks>
     public class MJPEGStreamReader : IDisposable
     {
         private TcpClient _tcpClient;
@@ -23,6 +38,85 @@ namespace RemoteControl.Classes
         /// <summary>
         /// Frame received event
         /// </summary>
+        /// <remarks>
+        /// <example>
+        /// Example how to handle <see cref="FrameReceived"/> event in WinForms application,
+        /// method should be handled inside Form or UserControl (see working example in <see cref="Form1"/> code-behind.
+        /// <code>
+        /// private void OnFrameReceived(object sender, FrameReceivedEventArgs e)
+        /// {
+        ///     if (this.InvokeRequired)
+        ///     {
+        ///         this.Invoke(new Action(() => OnFrameReceived(sender, e)));
+        ///         return;
+        ///     }
+        ///
+        ///     try
+        ///     {
+        ///         using (var ms = new MemoryStream(e.FrameData))
+        ///         {
+        ///             var image = Image.FromStream(ms);
+        ///             
+        ///             // preview_pictureBox - is a PictureBox element inside the WinForms application where the preview should be displayed.
+        ///             
+        ///             // Dispose previous image to prevent memory leaks
+        ///             var oldImage = preview_pictureBox.Image;
+        ///             preview_pictureBox.Image = image;
+        ///             oldImage?.Dispose();
+        ///         }
+        ///     }
+        ///     catch (Exception ex)
+        ///     {
+        ///         Console.WriteLine($"Error displaying frame: {ex.Message}");
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
+        /// <example>
+        /// Example how to handle <see cref="FrameReceived"/> event in WPF application,
+        /// method should be handled inside Window or UserControl.
+        /// <code>
+        /// // property which is binded to WPF Image Source property like this:
+        /// // Image Source="{Binding CurrentFrame}"
+        /// // or like this in code-behind:
+        /// // image.SetBinding(Image.SourceProperty, new Binding("CurrentFrame")
+        /// public BitmapImage CurrentFrame
+        /// {
+        ///     get => _currentFrame;
+        ///     set
+        ///     {
+        ///         _currentFrame = value;
+        ///         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentFrame));
+        ///     }
+        /// }
+        /// 
+        /// private void OnFrameReceived(object sender, FrameReceivedEventArgs e)
+        /// {
+        ///     Application.Current.Dispatcher.Invoke(() =>
+        ///     {
+        ///         try
+        ///         {
+        ///             using (var ms = new MemoryStream(e.FrameData))
+        ///             {
+        ///                 var bitmap = new BitmapImage();
+        ///                 bitmap.BeginInit();
+        ///                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
+        ///                 bitmap.StreamSource = ms;
+        ///                 bitmap.EndInit();
+        ///                 bitmap.Freeze(); // Important for cross-thread access
+        /// 
+        ///                 CurrentFrame = bitmap;
+        ///             }
+        ///         }
+        ///         catch (Exception ex)
+        ///         {
+        ///             Console.WriteLine($"Error displaying frame: {ex.Message}");
+        ///         }
+        ///     });
+        /// }
+        /// </code>
+        /// </example>
+        /// </remarks>
         public event EventHandler<FrameReceivedEventArgs> FrameReceived;
 
         /// <summary>

@@ -150,6 +150,10 @@ namespace RemoteControl
             }
             close = true;
 
+            // Cleanup preview stream on form closing
+            _streamReader?.Disconnect();
+            _streamReader?.Dispose();
+            base.OnClosing(e);
         }
 
         void Connect()

@@ -68,6 +68,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\ConnectionStatusEventArgs.cs" />
+    <Compile Include="Classes\FrameReceivedEventArgs.cs" />
+    <Compile Include="Classes\MJPEGStreamReader.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RemoteControl.Classes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,6 +19,10 @@ namespace RemoteControl
         private StreamWriter log_stream;
         bool close = false;
 
+        private MJPEGStreamReader _streamReader;
+        private bool _isStreamConnected = false;
+        private int _streamFrameCount = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -26,6 +31,109 @@ namespace RemoteControl
             this.FormClosing += Form1_FormClosing;
             client.RCMEvent += Client_RCMEvent;
             //log_stream = new System.IO.StreamWriter(Application.StartupPath + "\\log.txt", false);
+
+            InitializeStreamReader();
+        }
+
+        private void InitializeStreamReader()
+        {
+            _streamReader = new MJPEGStreamReader();
+            _streamReader.FrameReceived += OnFrameReceived;
+            _streamReader.ConnectionStatusChanged += OnConnectionStatusChanged;
+        }
+
+        // Handle preview connection status changed event
+        private void OnConnectionStatusChanged(object sender, ConnectionStatusEventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => OnConnectionStatusChanged(sender, e)));
+                return;
+            }
+
+            _isStreamConnected = e.IsConnected;
+
+            if (e.IsConnected)
+            {
+                streamStatusLbl.Text = "Status: Connected";
+                streamStatusLbl.ForeColor = Color.Green;
+                previewConnectBtn.Enabled = false;
+                previewDisconnectBtn.Enabled = true;
+                previewURLtb.Enabled = false;
+            }
+            else
+            {
+                streamStatusLbl.Text = e.ErrorMessage ?? "Status: Disconnected";
+                streamStatusLbl.ForeColor = Color.Red;
+                previewConnectBtn.Enabled = true;
+                previewDisconnectBtn.Enabled = false;
+                previewURLtb.Enabled = true;
+
+                // Clear the picture box
+                preview_pictureBox.Image?.Dispose();
+                preview_pictureBox.Image = null;
+            }
+        }
+
+        // Handle preview frame received event
+        private void OnFrameReceived(object sender, FrameReceivedEventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => OnFrameReceived(sender, e)));
+                return;
+            }
+
+            try
+            {
+                using (var ms = new MemoryStream(e.FrameData))
+                {
+                    var image = Image.FromStream(ms);
+
+                    // Dispose previous image to prevent memory leaks
+                    var oldImage = preview_pictureBox.Image;
+                    preview_pictureBox.Image = image;
+                    oldImage?.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error displaying frame: {ex.Message}");
+            }
+        }
+
+        // Handle connect preview button click
+        private async void ConnectPreview_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(previewURLtb.Text))
+            {
+                MessageBox.Show("Please enter a server URL.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            previewConnectBtn.Enabled = false;
+
+            try
+            {
+                string url = previewURLtb.Text.Trim();
+                if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+                {
+                    url = "http://" + url;
+                }
+
+                await _streamReader.ConnectAsync(url);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Connection failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                previewConnectBtn.Enabled = true;
+            }
+        }
+
+        // Handle disconnect preview button click
+        private void DisconnectPreview_Click(object sender, EventArgs e)
+        {
+            _streamReader.Disconnect();
         }
 
         private void Client_RCMEvent(string message, bool send)

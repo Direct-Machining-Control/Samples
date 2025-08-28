@@ -59,12 +59,18 @@
             this.labelSError = new System.Windows.Forms.Label();
             this.labelSRecipeRunning = new System.Windows.Forms.Label();
             this.use_log = new System.Windows.Forms.CheckBox();
-            this.panel_preview = new System.Windows.Forms.Panel();
             this.checksum_checkbox = new System.Windows.Forms.CheckBox();
+            this.preview_pictureBox = new System.Windows.Forms.PictureBox();
+            this.streamStatusLbl = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.previewURLtb = new System.Windows.Forms.TextBox();
+            this.previewConnectBtn = new System.Windows.Forms.Button();
+            this.previewDisconnectBtn = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.move1_to)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.move2_to)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonRun
@@ -381,13 +387,6 @@
             this.use_log.UseVisualStyleBackColor = true;
             this.use_log.CheckedChanged += new System.EventHandler(this.use_log_CheckedChanged);
             // 
-            // panel_preview
-            // 
-            this.panel_preview.Location = new System.Drawing.Point(888, 12);
-            this.panel_preview.Name = "panel_preview";
-            this.panel_preview.Size = new System.Drawing.Size(337, 254);
-            this.panel_preview.TabIndex = 16;
-            // 
             // checksum_checkbox
             // 
             this.checksum_checkbox.AutoSize = true;
@@ -399,13 +398,74 @@
             this.checksum_checkbox.UseVisualStyleBackColor = true;
             this.checksum_checkbox.CheckedChanged += new System.EventHandler(this.checksum_checkbox_CheckedChanged);
             // 
+            // preview_pictureBox
+            // 
+            this.preview_pictureBox.Location = new System.Drawing.Point(888, 82);
+            this.preview_pictureBox.Name = "preview_pictureBox";
+            this.preview_pictureBox.Size = new System.Drawing.Size(477, 340);
+            this.preview_pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.preview_pictureBox.TabIndex = 20;
+            this.preview_pictureBox.TabStop = false;
+            // 
+            // streamStatusLbl
+            // 
+            this.streamStatusLbl.AutoSize = true;
+            this.streamStatusLbl.ForeColor = System.Drawing.Color.Red;
+            this.streamStatusLbl.Location = new System.Drawing.Point(888, 60);
+            this.streamStatusLbl.Name = "streamStatusLbl";
+            this.streamStatusLbl.Size = new System.Drawing.Size(109, 13);
+            this.streamStatusLbl.TabIndex = 21;
+            this.streamStatusLbl.Text = "Status: Disconnected";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(891, 13);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(70, 13);
+            this.label7.TabIndex = 22;
+            this.label7.Text = "Preview URL";
+            // 
+            // previewURLtb
+            // 
+            this.previewURLtb.Location = new System.Drawing.Point(967, 9);
+            this.previewURLtb.Name = "previewURLtb";
+            this.previewURLtb.Size = new System.Drawing.Size(186, 20);
+            this.previewURLtb.TabIndex = 23;
+            this.previewURLtb.Text = "localhost:8080";
+            // 
+            // previewConnectBtn
+            // 
+            this.previewConnectBtn.Location = new System.Drawing.Point(1159, 7);
+            this.previewConnectBtn.Name = "previewConnectBtn";
+            this.previewConnectBtn.Size = new System.Drawing.Size(75, 23);
+            this.previewConnectBtn.TabIndex = 24;
+            this.previewConnectBtn.Text = "Connect";
+            this.previewConnectBtn.UseVisualStyleBackColor = true;
+            this.previewConnectBtn.Click += new System.EventHandler(this.ConnectPreview_Click);
+            // 
+            // previewDisconnectBtn
+            // 
+            this.previewDisconnectBtn.Location = new System.Drawing.Point(1240, 7);
+            this.previewDisconnectBtn.Name = "previewDisconnectBtn";
+            this.previewDisconnectBtn.Size = new System.Drawing.Size(75, 23);
+            this.previewDisconnectBtn.TabIndex = 24;
+            this.previewDisconnectBtn.Text = "Disconnect";
+            this.previewDisconnectBtn.UseVisualStyleBackColor = true;
+            this.previewDisconnectBtn.Click += new System.EventHandler(this.DisconnectPreview_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1377, 503);
+            this.Controls.Add(this.previewDisconnectBtn);
+            this.Controls.Add(this.previewConnectBtn);
+            this.Controls.Add(this.previewURLtb);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.streamStatusLbl);
+            this.Controls.Add(this.preview_pictureBox);
             this.Controls.Add(this.checksum_checkbox);
-            this.Controls.Add(this.panel_preview);
             this.Controls.Add(this.use_log);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -430,6 +490,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.move2_to)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_pictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -466,8 +527,13 @@
         private System.Windows.Forms.Label labelSError;
         private System.Windows.Forms.Label labelSRecipeRunning;
         private System.Windows.Forms.CheckBox use_log;
-        private System.Windows.Forms.Panel panel_preview;
         private System.Windows.Forms.CheckBox checksum_checkbox;
+        private System.Windows.Forms.PictureBox preview_pictureBox;
+        private System.Windows.Forms.Label streamStatusLbl;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox previewURLtb;
+        private System.Windows.Forms.Button previewConnectBtn;
+        private System.Windows.Forms.Button previewDisconnectBtn;
     }
 }
 

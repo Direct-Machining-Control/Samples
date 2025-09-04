@@ -384,35 +384,7 @@ namespace RemoteControl
         {
             PREVIEW = 0
         }
-        /// <summary>
-        /// Gets window handle for embedding window into this application. This works ONLY if both applications are on same PC
-        /// </summary>
-        /// <param name="type">Type of DMC window to get</param>
-        /// <param name="handle">Window handle</param>
-        /// <returns>True if window is available</returns>
-        internal bool GetWindow(WindowType type, ref IntPtr handle)
-        {
-            string result = SendReceive(ns, "GET_WINDOW "+ type.ToString());
-            int h = 0;
 
-            if (result != null && int.TryParse(result, out h) && h != 0)
-            {
-                handle = (IntPtr)h;
-                return true;
-            }
-            return false;
-        }
-
-        internal bool SetWindow(WindowType type, System.Windows.Forms.Control window)
-        {
-            if (window == null) return false;
-            IntPtr handle = IntPtr.Zero;
-            if (GetWindow(RCMClient.WindowType.PREVIEW, ref handle))
-                WinHelper.SetWindowHandle(handle, window);
-            else
-                return false;
-            return true;
-        }
         /// <summary>
         /// Pauses recipe
         /// </summary>

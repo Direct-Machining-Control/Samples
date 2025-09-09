@@ -58,7 +58,7 @@ namespace PythonCommandPlugin
 
         public bool IsConnected()
         {
-            return false;
+            return true;
         }
 
         public bool IsEnabled()

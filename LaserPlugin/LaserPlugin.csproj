@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LaserPlugin</RootNamespace>
     <AssemblyName>LaserPlugin</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -55,10 +55,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
-    <Compile Include="CommandGUI.cs" />
+    <Compile Include="CommandGUI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="CommandGUI.Designer.cs">
       <DependentUpon>CommandGUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="CommandParameters.cs" />
+    <Compile Include="Laser.cs" />
+    <Compile Include="LaserStatus.cs" />
+    <Compile Include="Marking.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

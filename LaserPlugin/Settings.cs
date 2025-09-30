@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace LaserPlugin
 {
-    public class Settings : Base.IDeviceSettings
+    public class Settings : Base.IDeviceSettings, ILaserSettings //The plugin settings are displayed at the bottom of Laser Control tab when a Laser device is selected.
     {
         public Base.StringListParameter port = new Base.StringListParameter("port", "COM Port", "", null, true);
         static string[] baud_rates = { "600", "1200", "2400", "4800", "9600", "14400", "19200", "28800", "38400", "56000", "57600", "115200", "128000", "256000" };
@@ -17,6 +18,7 @@ namespace LaserPlugin
             get { return Convert.ToInt32(baud_rate.Value); }
         }
 
+        public const string deviceName = "My Laser";
         public Settings()
             : base("my_laser", "My Laser", "My Laser")
         {

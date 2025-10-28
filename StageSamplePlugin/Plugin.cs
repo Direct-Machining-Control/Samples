@@ -12,7 +12,7 @@ namespace StageSamplePlugin
     {
         internal static Plugin plugin = null;
         internal ControllerSettings settings = new ControllerSettings();
-        internal XYZ xyz;
+        internal IMotionDevice xyz;
 
         bool is_connected = false;
         Thread monitor_thread = null;
@@ -37,8 +37,20 @@ namespace StageSamplePlugin
                     InitAxes();
                     if (!EnableAxes()) { Disconnect(); return false; }
 
-                    // create XYZ motion 
-                    xyz = new XYZ();
+
+                    // We can move XY axes at the same time if controller is the same
+                    if (IsValidAxis(Settings.StageX) && IsValidAxis(Settings.StageY)) 
+                    {
+                        // create XYZ motion 
+                        bool isSimplePointToPointMotion = true;
+                        if (isSimplePointToPointMotion)
+                            xyz = new GeneralXYZ(
+                                IsValidAxis(Settings.StageX) ? Settings.StageX : null,
+                                IsValidAxis(Settings.StageY) ? Settings.StageY : null,
+                                IsValidAxis(Settings.StageZ) ? Settings.StageZ : null); // use general implementation where we just need to move from one point to another
+                        else
+                            xyz = new XYZ(); // use sophisticated motion where we can move any trajectory even with triggering
+                    }
 
                     // used for monitoring axes positions
                     // this can be removed and axis position assigned in Axis.Move method
@@ -49,14 +61,14 @@ namespace StageSamplePlugin
                 catch (Exception ex2)
                 {
                     Disconnect();
-                    return Functions.Error("Unable to connect to " + GetName() + "\n", ex2);
+                    return Base.Err.CanNotConnect(this, GetName(), null, ex2);
                 }
                 return is_connected;
             }
             catch (Exception ex)
             {
                 Disconnect();
-                return Functions.Error("Unable to connect to " + GetName() + "\n", ex);
+                return Base.Err.CanNotConnect(this, GetName(), null, ex);
             }
         }
 
@@ -69,7 +81,7 @@ namespace StageSamplePlugin
                 {
                     // TODO: disconnect from controller 
                 }
-                catch (Exception ex) { Functions.Error("Unable to disconnect from " + GetName(), ex); }
+                catch (Exception ex) { Functions.Error(this, "Unable to disconnect from " + GetName(), ex); }
                 try
                 {
                     if (monitor_thread != null && !monitor_thread.Join(1000)) monitor_thread.Abort();
@@ -99,7 +111,7 @@ namespace StageSamplePlugin
             {
 
             }
-            catch (Exception ex) { return Functions.Error("Unable to home " + GetName() + "\n" + ex.Message); }
+            catch (Exception ex) { return Functions.Error(this, "Unable to home " + GetName(), ex); }
             return true;
         }
 

@@ -71,6 +71,11 @@ namespace StageSamplePlugin
             }
         }
 
+        public override bool CanWorkWith(IAxisSettings axis_settings)
+        {
+            return axis_settings != null && axis_settings.Axis is Axis; // this XYZ can only move axis that depends for this controller
+        }
+
         // New motion speeds, laser parameters, ...
         public override bool SetMarkingParameters(MarkingParameters markingParameters)
         {

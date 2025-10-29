@@ -13,7 +13,7 @@ namespace StageSamplePlugin
         public List<AxisSettings> axes = new List<AxisSettings>();
 
         // custom controller parameters
-        public StringListParameter port = new StringListParameter("port", "COM Port", "", null, true);
+        public StringListParameter port = new StringListParameter(nameof(port), "COM Port", "", null, true); // unique_name must be unique among all parameters in the system. unique_name for GUI field Name must match parameter unique_name for automatic assignment
 
 
         public ControllerSettings()

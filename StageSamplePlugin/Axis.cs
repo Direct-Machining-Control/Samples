@@ -7,12 +7,13 @@ using Base;
 
 namespace StageSamplePlugin
 {
-    class Axis : IAxis, IAxisFreemove
+    class Axis : IAxis, IAxisFreemove, IAxisError
     {
         IAxisSettings settings = null;
         AxisSettings axis_settings = null;
         double scale = 1;
         private bool enabled;
+        private bool is_moving;
         double last_position; // last position taken from controller
 
         public Axis(IAxisSettings settings, AxisSettings axis_settings)
@@ -26,7 +27,7 @@ namespace StageSamplePlugin
 
             settings.Axis = this;
             //axis_index = axis_settings.axis_index.value;
-
+            is_moving = false;
         }
 
         public bool Move(double position, bool waitForMotionDone)
@@ -34,29 +35,39 @@ namespace StageSamplePlugin
             return Move(position, settings.DefaultSpeed, waitForMotionDone);
         }
 
-        /// <param name="position">Absolute position in mm</param>
-        /// <param name="speed">Speed in mm/s</param>
-        /// <returns>True if motion is successful</returns>
+        /// <summary>
+        /// Move axis
+        /// </summary>
+        /// <param name="position">Position in units (mm or deg)</param>
+        /// <param name="speed">Speed in units/s</param>
+        /// <param name="waitForMotionDone">true if wait for motion done, false if don't wait for motion done</param>
+        /// <returns>True if motion successful, false if error occured</returns>
         public bool Move(double position, double speed, bool waitForMotionDone)
         {
-            if (!Enabled) return Functions.Error("Axis '" + GetName() + "' not enabled");
+            if (!Enabled) return Functions.Error(this, "Axis '" + GetName() + "' not enabled");
             if (!IsPositionValid(position)) return false;
             if (!IsSpeedValid(speed)) return false;
 
             try
             {
+                is_moving = true;
                 // TODO: send position to controller
-                
+
 
                 if (waitForMotionDone) { WaitForMoveDone(); settings.ModeledPosition = position; last_position = position;}
             }
-            catch (Exception ex) { return Functions.Error("Unable to do motion. ", ex); }
+            catch (Exception ex) { return Functions.Error(this, "Unable to do motion. ", ex); }
             return true;
         }
 
+        /// <summary>
+        /// Wait for axis motion done can be called after Move function is called without waiting for motion to finish
+        /// </summary>
+        /// <returns>True if motion successful, false if error occured</returns>
         public bool WaitForMoveDone()
         {
             // TODO: wait until motion is done
+            is_moving = false;
             return true;
         }
 
@@ -69,7 +80,7 @@ namespace StageSamplePlugin
 
                 return last_position;
             }
-            catch (Exception ex) { Functions.Error("Unable to get position. ", ex); return 0.0; }
+            catch (Exception ex) { Functions.Error(this, "Unable to get position. ", ex); return 0.0; }
         }
 
         /// <summary>
@@ -93,8 +104,8 @@ namespace StageSamplePlugin
 
         public bool Home()
         {
-            if (!CanHome) return Functions.Error("Homing for axis is disabled in settings.");
-            if (!Enabled) return Functions.Error("Axis '" + GetName() + "' not enabled");
+            if (!CanHome) return Functions.Error(this, "Homing for axis is disabled in settings.");
+            if (!Enabled) return Functions.Error(this, "Axis '" + GetName() + "' not enabled");
 
             // TODO: home the axis
             is_homing = true;
@@ -131,12 +142,12 @@ namespace StageSamplePlugin
 
         public bool StartFreemove(double speed)
         {
-            if (!Enabled) return Functions.Error("Axis '" + GetName() + "' not enabled");
+            if (!Enabled) return Functions.Error(this, "Axis '" + GetName() + "' not enabled");
             try
             {
                 // TODO: start axis free move(JOG) at speed (positive if speed > 0, negative if speed < 0)
             }
-            catch (Exception ex) { return Functions.Error("Unable to start freemove. "); }
+            catch (Exception ex) { return Functions.Error(this, "Unable to start freemove. ", ex); }
             return true;
         }
 
@@ -150,7 +161,7 @@ namespace StageSamplePlugin
             catch (Exception) { }
         }
 
-        // is axis enabled (power is on)
+        // is axis enabled (power to motor is on)
         public bool Enabled
         {
             get
@@ -159,11 +170,15 @@ namespace StageSamplePlugin
                 return enabled;
             }
         }
+
+        /// <summary>
+        /// Get current axis state
+        /// </summary>
         public AxisState GetAxisState()
         {
             AxisState state = AxisState.None;
             //if (IsError()) state |= AxisState.Error;
-            //if (IsHomed) state |= AxisState.Homed;
+            if (is_moving) state |= AxisState.Moving;
             if (Enabled) state |= AxisState.Enabled;
             return state;
         }
@@ -192,5 +207,53 @@ namespace StageSamplePlugin
         public IAxisSettings Settings { get { return settings; } }
         public string GetUnits() { return (settings.IsRotary ? "deg" : "mm"); }
         public string GetName() { return settings.GetFullName(); }
+
+        /// <summary>
+        /// Is axis in error state
+        /// </summary>
+        /// <returns>True if axis in error</returns>
+        bool IAxisError.IsError()
+        {
+            if (!Plugin.plugin.IsConnected()) return true;
+            return false; // no error
+        }
+
+        /// <summary>
+        /// Is axis in warning state
+        /// </summary>
+        /// <returns>True if axis in warning state</returns>
+        bool IAxisError.IsWarning()
+        {
+            return false; // no warning
+        }
+
+        /// <summary>
+        /// Is axis has option to clean error
+        /// </summary>
+        /// <returns>True is axis has option to clear or reset error</returns>
+        bool IAxisError.IsCanClearError()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Clear/reset axis error
+        /// </summary>
+        /// <returns>True if error is reseted</returns>
+        bool IAxisError.ClearError()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Get axis state information
+        /// </summary>
+        /// <returns>List with axis states(error messages)</returns>
+        string[] IAxisError.GetInfoList()
+        {
+            if (!Plugin.plugin.IsConnected()) return new string[] { "No connection to controller" };
+
+            return null;
+        }
     }
 }

@@ -122,7 +122,29 @@ namespace StageSamplePlugin
             if (isJump) SplitCode();
             else if (commands_in_list > (MAX_COMMANDS-5)) SplitCode();
         }
-        
+
+        /// <summary>
+        /// Create margin move to <paramref name="end_point"/>. Use marking speed for the move.
+        /// </summary>
+        /// <param name="end_point">End point were positioning device should move</param>
+        /// <param name="is_acc">Is acceleration or deceleration</param>
+        /// <returns>True if no error</returns>
+        public override bool MakeMargin(Vector3 end_point, bool is_acc)
+        {
+            if (is_acc)
+            {
+                SetJumpParameters(); // laser off, setup triggering if needed and do acceleration
+            }
+            else
+            {
+                SetJumpParameters(); // laser off and decelerate
+            }
+            G1(end_point.x, end_point.y, end_point.z, prm.mark_speed, true, true, true);
+            commands_in_list++;
+            last_x = end_point.x; last_y = end_point.y; last_z = end_point.z;
+            return true;
+        }
+
         public override bool Mark(double x, double y)
         {
             if (!CanMove(true, true, false)) return false;
@@ -178,57 +200,95 @@ namespace StageSamplePlugin
 
         public override bool Jump(double x, double y)
         {
-            if (!CanMove(true, true, false)) return false;
-            if (!SetJumpParameters()) return false;
-            commands_in_list++;
-            
-            G0(x, y, 0, prm.jump_speed_x, prm.jump_speed_y, prm.jump_speed_z, true, true, false);
+            if (!is_list_started)
+            {
+                // direct jump - execute immediately
+                // simple implementation - call XY axes move and then wait until done
+                if (axisX != null && !axisX.Move(x, false)) return false;
+                if (axisY != null && !axisY.Move(y, false)) return false;
+                if (axisX != null && !axisX.WaitForMoveDone()) return false;
+                if (axisY != null && !axisY.WaitForMoveDone()) return false;
+                return true;
+            }
+            else
+            {
+                if (!CanMove(true, true, false)) return false;
+                if (!SetJumpParameters()) return false;
+                commands_in_list++;
 
-            Delay((int)Settings.General.DelayAfterJump);
-            last_x = x; last_y = y;
-            CheckToSplit(true); 
-            return true;
+                G0(x, y, 0, prm.jump_speed_x, prm.jump_speed_y, prm.jump_speed_z, true, true, false);
+
+                Delay((int)Settings.General.DelayAfterJump);
+                last_x = x; last_y = y;
+                CheckToSplit(true);
+                return true;
+            }
         }
 
         public override bool Jump(double x, double y, double z)
         {
-            if (!CanMove(true, true, true)) return false;
-            if (!SetJumpParameters()) return false;
-            commands_in_list++;
-            
-            G0(x, y, z, prm.jump_speed_x, prm.jump_speed_y, prm.jump_speed_z, true, true, true);
+            if (!is_list_started)
+            {
+                // direct jump - execute immediately
+                // simple implementation - call XYZ axes move and then wait until done
+                if (axisX != null && !axisX.Move(x, false)) return false;
+                if (axisY != null && !axisY.Move(y, false)) return false;
+                if (axisZ != null && !axisZ.Move(z, false)) return false;
+                if (axisX != null && !axisX.WaitForMoveDone()) return false;
+                if (axisY != null && !axisY.WaitForMoveDone()) return false;
+                if (axisZ != null && !axisZ.WaitForMoveDone()) return false;
+                return true;
+            }
+            else
+            {
+                if (!CanMove(true, true, true)) return false;
+                if (!SetJumpParameters()) return false;
+                commands_in_list++;
 
-            Delay((int)Settings.General.DelayAfterJump);
-            last_x = x; last_y = y; last_z = z;
-            CheckToSplit(true); 
-            return true;
+                G0(x, y, z, prm.jump_speed_x, prm.jump_speed_y, prm.jump_speed_z, true, true, true);
+
+                Delay((int)Settings.General.DelayAfterJump);
+                last_x = x; last_y = y; last_z = z;
+                CheckToSplit(true);
+                return true;
+            }
         }
 
         public override bool Jump(double position, IAxisSettings axis_settings)
         {
-            if (!(axis_settings.Axis is Axis))
+            if (!is_list_started)
             {
-                SplitCode();
-                if (!axis_settings.Axis.Move(position, true)) return false;
+                // direct jump - execute immediately
+                // simple implementation - call axis move
+                if (axis_settings.Axis == null) return Functions.Error("Axis is not assigned!");
+                return axis_settings.Axis.Move(position, true);
             }
+            else
+            {
+                if (!(axis_settings.Axis is Axis))
+                {
+                    SplitCode();
+                    if (!axis_settings.Axis.Move(position, true)) return false;
+                }
 
-            if (!SetJumpParameters()) return false;
+                if (!SetJumpParameters()) return false;
 
-            bool is_x = axis_settings == Settings.StageX;
-            bool is_y = axis_settings == Settings.StageY;
-            bool is_z = axis_settings == Settings.StageZ;
-            commands_in_list++;
+                bool is_x = axis_settings == Settings.StageX;
+                bool is_y = axis_settings == Settings.StageY;
+                bool is_z = axis_settings == Settings.StageZ;
+                commands_in_list++;
 
-            // TODO: move one axis
+                // TODO: move one axis
 
-            Delay((int)Settings.General.DelayAfterJump);
-    
-            if (is_x) last_x = position; 
-            if (is_y) last_y = position; 
-            if (is_z) last_z = position;
+                Delay((int)Settings.General.DelayAfterJump);
 
-            CheckToSplit(true); 
-            return true;
+                if (is_x) last_x = position;
+                if (is_y) last_y = position;
+                if (is_z) last_z = position;
+
+                CheckToSplit(true);
+                return true;
+            }
         }
 
         public override bool Home()

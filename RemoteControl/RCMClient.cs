@@ -725,6 +725,9 @@ namespace RemoteControl
         /// <returns></returns>
         public async Task<Tuple<bool, string>> SendFile(string uploadFilePath, string fileName, bool allowOverwrite)
         {
+            if (!System.IO.File.Exists(fileName))
+                return Tuple.Create(false, $" File '{fileName}' was not found.");
+
             // Construct full upload path combining upload path and pure file name
             string uploadFileName = System.IO.Path.Combine(uploadFilePath, System.IO.Path.GetFileName(fileName));
 

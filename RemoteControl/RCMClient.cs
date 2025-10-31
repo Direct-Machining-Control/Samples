@@ -142,7 +142,7 @@ namespace RemoteControl
         /// <param name="use_message_id">Use Message ID</param>
         /// <param name="use_checksum">Use Checksum</param>
         /// <returns>True if connected, otherwise false</returns>
-        public bool Connect(IPAddress ip_adress, bool use_message_id = false, bool use_checksum = false)
+        public bool Connect(IPAddress ip_adress, out string errorMessage, bool use_message_id = false, bool use_checksum = false)
         {
             try
             {
@@ -155,11 +155,12 @@ namespace RemoteControl
                 int bytes = ns.Read(buffer, 0, buffer.Length);
                 string text = Encoding.ASCII.GetString(buffer);
                 System.Diagnostics.Trace.WriteLine(text);
+                errorMessage = "";
                 return true;
             }
             catch (Exception ex) {
                 Disconnect();
-                System.Windows.Forms.MessageBox.Show("Unable to connect to DMC. " + ex.Message);
+                errorMessage = $"Unable to connect to DMC. {ex.Message}";
                 return false;
             }
         }

@@ -159,7 +159,7 @@ namespace RemoteControl
 
         void Connect()
         {
-            if (client.Connect(IPAddress.Loopback))
+            if (client.Connect(IPAddress.Loopback, out string errorMessage))
             {
                 comboBoxRecipe.Text = client.GetActiveRecipe();
                 buttonRun.Text = "Run";
@@ -168,6 +168,10 @@ namespace RemoteControl
                 ReadGalvoSettings();
 
                 //client.SetWindow(RCMClient.WindowType.PREVIEW, panel_preview);
+            }
+            else
+            {
+                MessageBox.Show(errorMessage);
             }
         }
 
@@ -206,8 +210,11 @@ namespace RemoteControl
         public static void Sample1()
         {
             RCMClient client = new RCMClient();
-            if (!client.Connect(IPAddress.Loopback))
+            if (!client.Connect(IPAddress.Loopback, out string errorMessage))
+            {
+                MessageBox.Show(errorMessage);
                 return;
+            }
 
             string error_message = string.Empty;
             if (!client.ConnectToHardware(ref error_message))
@@ -417,14 +424,14 @@ namespace RemoteControl
 
             try
             {
-                if (fileUploadClient.Connect(IPAddress.Loopback))
+                if (fileUploadClient.Connect(IPAddress.Loopback, out string errorMessage))
                 {
                     var response = await fileUploadClient.SendFile(filePath, filename, allowOverwrite);
                     return response;
                 }
                 else
                 {
-                    return Tuple.Create(false, "Failed to connect to DMC instance.");
+                    return Tuple.Create(false, errorMessage);
                 }
             }
             catch (Exception ex)

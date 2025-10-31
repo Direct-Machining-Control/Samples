@@ -66,11 +66,17 @@
             this.previewURLtb = new System.Windows.Forms.TextBox();
             this.previewConnectBtn = new System.Windows.Forms.Button();
             this.previewDisconnectBtn = new System.Windows.Forms.Button();
+            this.btnUploadFile = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.filePath = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cbAllowOverwrite = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.move1_to)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.move2_to)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.preview_pictureBox)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonRun
@@ -454,11 +460,64 @@
             this.previewDisconnectBtn.UseVisualStyleBackColor = true;
             this.previewDisconnectBtn.Click += new System.EventHandler(this.DisconnectPreview_Click);
             // 
+            // btnUploadFile
+            // 
+            this.btnUploadFile.Location = new System.Drawing.Point(17, 85);
+            this.btnUploadFile.Name = "btnUploadFile";
+            this.btnUploadFile.Size = new System.Drawing.Size(144, 35);
+            this.btnUploadFile.TabIndex = 25;
+            this.btnUploadFile.Text = "Upload File To DMC PC";
+            this.btnUploadFile.UseVisualStyleBackColor = true;
+            this.btnUploadFile.Click += new System.EventHandler(this.btnUploadFile_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.cbAllowOverwrite);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.filePath);
+            this.groupBox1.Controls.Add(this.btnUploadFile);
+            this.groupBox1.Location = new System.Drawing.Point(12, 365);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(240, 126);
+            this.groupBox1.TabIndex = 26;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "File Upload";
+            // 
+            // filePath
+            // 
+            this.filePath.Location = new System.Drawing.Point(17, 37);
+            this.filePath.Name = "filePath";
+            this.filePath.Size = new System.Drawing.Size(217, 20);
+            this.filePath.TabIndex = 26;
+            this.filePath.Text = "MyFiles/Drawings";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(14, 20);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(185, 13);
+            this.label8.TabIndex = 27;
+            this.label8.Text = "Upload To (Relative or Absolute path)";
+            // 
+            // cbAllowOverwrite
+            // 
+            this.cbAllowOverwrite.AutoSize = true;
+            this.cbAllowOverwrite.Checked = true;
+            this.cbAllowOverwrite.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbAllowOverwrite.Location = new System.Drawing.Point(17, 64);
+            this.cbAllowOverwrite.Name = "cbAllowOverwrite";
+            this.cbAllowOverwrite.Size = new System.Drawing.Size(118, 17);
+            this.cbAllowOverwrite.TabIndex = 28;
+            this.cbAllowOverwrite.Text = "Allow Overwrite File";
+            this.cbAllowOverwrite.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1377, 503);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.previewDisconnectBtn);
             this.Controls.Add(this.previewConnectBtn);
             this.Controls.Add(this.previewURLtb);
@@ -491,6 +550,8 @@
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.preview_pictureBox)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -534,6 +595,11 @@
         private System.Windows.Forms.TextBox previewURLtb;
         private System.Windows.Forms.Button previewConnectBtn;
         private System.Windows.Forms.Button previewDisconnectBtn;
+        private System.Windows.Forms.Button btnUploadFile;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox filePath;
+        private System.Windows.Forms.CheckBox cbAllowOverwrite;
     }
 }
 

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RemoteControl
@@ -371,6 +372,69 @@ namespace RemoteControl
         {
             if(client != null)
                 client.UseChecksum = client.UseMessageID = checksum_checkbox.Checked;
+        }
+
+        private async void btnUploadFile_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Any File (*.*)|*.*";
+                ofd.Multiselect = false;
+                ofd.CheckFileExists = true;
+                ofd.CheckPathExists = true;
+                ofd.RestoreDirectory = true;
+
+                // Select file for uploading
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    // Upload selected file
+                    Tuple<bool,string> result = await UploadFile(filePath.Text, ofd.FileName, cbAllowOverwrite.Checked);
+                    if (result.Item1 == true)
+                    {
+                        MessageBox.Show($"File uploaded successfully.\r\n{result.Item2}", "File Upload", MessageBoxButtons.OK);
+                    }
+                    else
+                        MessageBox.Show($"File upload failed.\r\n{result.Item2}", "File Upload", MessageBoxButtons.OK);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Upload file to DMC PC
+        /// </summary>
+        /// <param name="filePath">Path where file should be uploaded (relative or absolute)</param>
+        /// <param name="filename">File to upload</param>
+        /// <param name="allowOverwrite">Allow overwrite existing file</param>
+        /// <returns></returns>
+        private async Task<Tuple<bool, string>> UploadFile(string filePath, string filename, bool allowOverwrite)
+        {
+            // It is possible to send file using same client already created,
+            // but for file upload we should disable constant status polling (timer) and any other command sending.
+            // So it is better to create new client and send the file on the second channel.
+            // But it is not mandatory.
+
+            RCMClient fileUploadClient = new RCMClient();
+
+            try
+            {
+                if (fileUploadClient.Connect(IPAddress.Loopback))
+                {
+                    var response = await fileUploadClient.SendFile(filePath, filename, allowOverwrite);
+                    return response;
+                }
+                else
+                {
+                    return Tuple.Create(false, "Failed to connect to DMC instance.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Tuple.Create(false, ex.Message);
+            }
+            finally
+            {
+                fileUploadClient?.Disconnect();
+            }
         }
     }
 }

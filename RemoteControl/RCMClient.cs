@@ -9,6 +9,9 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace RemoteControl
 {
@@ -712,6 +715,75 @@ namespace RemoteControl
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
+
+        /// <summary>
+        /// Send file to DMC PC
+        /// </summary>
+        /// <param name="uploadFilePath">Path where file should be uploaded (relative or absolute)</param>
+        /// <param name="fileName">File to upload</param>
+        /// <param name="allowOverwrite">Allow overwrite existing file</param>
+        /// <returns></returns>
+        public async Task<Tuple<bool, string>> SendFile(string uploadFilePath, string fileName, bool allowOverwrite)
+        {
+            // Construct full upload path combining upload path and pure file name
+            string uploadFileName = System.IO.Path.Combine(uploadFilePath, System.IO.Path.GetFileName(fileName));
+
+            // If path contains spaces we need to wrap it in quotes
+            if (uploadFileName.Contains(" "))
+                uploadFileName = $"\"{uploadFileName}\""; 
+
+            FileInfo fileInfo = new FileInfo(fileName);
+            string command = $"FILE_UPLOAD {uploadFileName} {fileInfo.Length}";
+
+            if (!allowOverwrite)
+                command = command + " -"; // Add flag disabling overwrite
+
+            // Initiate file upload
+            string received = SendReceive(ns, command);
+            if (!received.StartsWith("OK"))
+                // Exit if file can not be uploaded
+                return Tuple.Create(false, received);
+
+            // Read and send file in chunks, as file can be big.
+            byte[] fileBuffer = new byte[4096];
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            {
+                int bytesRead;
+                while ((bytesRead = fs.Read(fileBuffer, 0, fileBuffer.Length)) > 0)
+                {
+                    try
+                    {
+                        // Send data chunk to DMC
+                        ns.Write(fileBuffer, 0, bytesRead);
+                    }
+                    catch (Exception ex)
+                    {
+                        return Tuple.Create(false, ex.Message);
+                    }
+                }
+            }
+
+            // Read File Upload result message from DMC
+            using (CancellationTokenSource cts = new CancellationTokenSource())
+            {
+                cts.CancelAfter(TimeSpan.FromSeconds(11));
+                while (!ns.DataAvailable && !cts.IsCancellationRequested)
+                    await Task.Delay(5);
+
+                // If any response isn't received in 11 seconds - exit
+                if (cts.IsCancellationRequested)
+                    return Tuple.Create(false, "No response received.");
+
+                int bytesToRead = client.Available;
+
+                cts.CancelAfter(TimeSpan.FromSeconds(3));
+                await ns.ReadAsync(buffer, 0, bytesToRead, cts.Token);
+                received = Encoding.ASCII.GetString(buffer, 0, bytesToRead);
+            }
+
+            return Tuple.Create(received.StartsWith("OK"), received);
+        }
+
         /// <summary>
         /// Removes working zone
         /// </summary>

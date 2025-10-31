@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Core.Commands;
 
 namespace PythonCommandPlugin
 {
@@ -129,15 +130,18 @@ namespace PythonCommandPlugin
             return gui;
         }
 
+        string executableFileName;
+        string resultFileName;
+
         public override bool Compile()
         {
             if (!ParseAll()) return false;
 
             //if (!Plugin.settings.enabled.value) return Functions.Error("Python is disabled. ");
             //if (!File.Exists(Plugin.settings.executable_path.Value)) return Functions.Error("Python executable not found. ");
-            if (gui != null) executable_file_name.Value = gui.ExecutableFileName;
-            if (!File.Exists(executable_file_name.Value)) return Functions.Error("Executable file not found. ");
-            if (gui != null) result_file_name.Value = gui.ResultFileName;
+            if (!TextCommand.ParseText(gui.ExecutableFileName, ref executableFileName, Recipe.variables)) return false;
+            if (!File.Exists(executableFileName)) return Functions.Error("Script file not found. ");
+            if (!TextCommand.ParseText(gui.ResultFileName, ref resultFileName, Recipe.variables)) return false;
 
             exportDataCommand.Compile();
             exportDataCommand.SetupWritter(tempFilePath);
@@ -156,7 +160,7 @@ namespace PythonCommandPlugin
             try
             {
                 start = new ProcessStartInfo();
-                start.FileName = executable_file_name.Value;
+                start.FileName = executableFileName;
                 if (File.Exists(tempFilePath))
                 {
                     string[] lines = File.ReadAllLines(tempFilePath);
@@ -187,7 +191,7 @@ namespace PythonCommandPlugin
                             if (process.ExitCode != 0)
                             {
                                 //Base.Functions.Erro
-                                return Functions.ErrorF("Executable file '{0}' failed to run. Exit code: {1}. ", Path.GetFileName(executable_file_name.Value), process.ExitCode);
+                                return Functions.ErrorF("Executable file '{0}' failed to run. Exit code: {1}. ", Path.GetFileName(executableFileName), process.ExitCode);
                             }
                         }
                     }
@@ -222,10 +226,10 @@ namespace PythonCommandPlugin
 
         private void WriteResult(string result)
         {
-            if (result_file_name.Value == "")
+            if (resultFileName == "")
                 return;
 
-            using (StreamWriter writer = new StreamWriter(result_file_name.Value))
+            using (StreamWriter writer = new StreamWriter(resultFileName))
             {
                 writer.Write(result);
             }

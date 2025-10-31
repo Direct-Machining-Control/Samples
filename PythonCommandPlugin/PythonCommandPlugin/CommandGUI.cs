@@ -114,15 +114,18 @@ namespace PythonCommandPlugin
             return gui;
         }
 
+        string scriptFileName;
+        string resultFileName;
+
         public override bool Compile()
         {
             if (!ParseAll()) return false;
 
             if (!Plugin.settings.enabled.value) return Functions.Error("Python is disabled. ");
             if (!File.Exists(Plugin.settings.executable_path.Value)) return Functions.Error("Python executable not found. ");
-            if (gui != null) script_file_name.Value = gui.ScriptFileName;
-            if (!File.Exists(script_file_name.Value)) return Functions.Error("Script file not found. ");
-            if (gui != null) result_file_name.Value = gui.ResultFileName;
+            if (!TextCommand.ParseText(script_file_name.Value, ref scriptFileName, Recipe.variables)) return false;
+            if (!File.Exists(scriptFileName)) return Functions.Error("Script file not found. ");
+            if (!TextCommand.ParseText(result_file_name.Value, ref resultFileName, Recipe.variables)) return false;
 
             exportDataCommand.Compile();
             exportDataCommand.SetupWritter(tempFilePath);
@@ -139,7 +142,7 @@ namespace PythonCommandPlugin
 
             try
             {
-                RunPyhton(script_file_name.Value, tempFilePath);
+                RunPyhton(scriptFileName, tempFilePath);
             }
             catch (Exception ex)
             {
@@ -192,10 +195,10 @@ namespace PythonCommandPlugin
 
         private void WriteResult(string result)
         {
-            if (result_file_name.Value == "")
+            if (resultFileName == "")
                 return;
 
-            using (StreamWriter writer = new StreamWriter(result_file_name.Value))
+            using (StreamWriter writer = new StreamWriter(resultFileName))
             {
                 writer.Write(result);
             }

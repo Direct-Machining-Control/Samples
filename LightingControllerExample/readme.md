@@ -1,0 +1,2 @@
+To create create a lighting controller device plugin, LightingPlugin needs to be installed, and LightingPlugin.dll needs to be referenced in your project.
+Please contact our support/sales department for more information if you don't have LightingPlugin

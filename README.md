@@ -22,3 +22,4 @@ Some of the older examples are set to use .NET Framework 4.5. To build them for 
 [StageSamplePlugin](/StageSamplePlugin/) - Stage (axis) device.  
 [TestPlugin](/TestPlugin/) -  
 [ViewWindowPlugin](/ViewWindowPlugin/) - View window.  
+[LightingPlugin](/LightingControllerExample/) - Lighting controller implementation example

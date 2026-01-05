@@ -137,6 +137,7 @@ namespace PythonCommandPlugin
         {
             if (!ParseAll()) return false;
 
+            if (gui is null) gui = (ExeFile_CommandGUI)ExeFile_CommandGUI.Get(this);
             //if (!Plugin.settings.enabled.value) return Functions.Error("Python is disabled. ");
             //if (!File.Exists(Plugin.settings.executable_path.Value)) return Functions.Error("Python executable not found. ");
             if (!TextCommand.ParseText(gui.ExecutableFileName, ref executableFileName, Recipe.variables)) return false;

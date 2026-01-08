@@ -130,24 +130,16 @@ namespace PythonCommandPlugin
             return gui;
         }
 
-        //string executableFileName;
+        string executableFileName;
         string resultFileName;
 
         public override bool Compile()
         {
             if (!ParseAll()) return false;
 
-            if (gui is null) gui = (ExeFile_CommandGUI)ExeFile_CommandGUI.Get(this);
-
-            //if (!Plugin.settings.enabled.value) return Functions.Error("Python is disabled. ");
-            //if (!File.Exists(Plugin.settings.executable_path.Value)) return Functions.Error("Python executable not found. ");
-
-            if(!File.Exists(executable_file_name.Value)) return Functions.Error("Script file not found. ");
+            if (!TextCommand.ParseText(executable_file_name.Value, ref executableFileName, Recipe.variables)) return false;
+            if (!File.Exists(executableFileName)) return Functions.Error("Script file not found. ");
             if (!TextCommand.ParseText(result_file_name.Value, ref resultFileName, Recipe.variables)) return false;
-            //GUI is never executed when initialized from RecipeTool
-          //  if (!TextCommand.ParseText(gui.ExecutableFileName, ref executableFileName, Recipe.variables)) return false;
-            //if (!File.Exists(executableFileName)) return Functions.Error("Script file not found. ");
-          //  if (!TextCommand.ParseText(gui.ResultFileName, ref resultFileName, Recipe.variables)) return false;
 
             exportDataCommand.Compile();
             exportDataCommand.SetupWritter(tempFilePath);
@@ -166,7 +158,8 @@ namespace PythonCommandPlugin
             try
             {
                 start = new ProcessStartInfo();
-                start.FileName = executable_file_name.Value;
+                start.FileName = executableFileName;
+                //turim resultFileName naudoti
                 if (File.Exists(tempFilePath))
                 {
                     string[] lines = File.ReadAllLines(tempFilePath);

@@ -159,7 +159,6 @@ namespace PythonCommandPlugin
             {
                 start = new ProcessStartInfo();
                 start.FileName = executableFileName;
-                //turim resultFileName naudoti
                 if (File.Exists(tempFilePath))
                 {
                     string[] lines = File.ReadAllLines(tempFilePath);

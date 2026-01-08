@@ -137,12 +137,9 @@ namespace PythonCommandPlugin
         {
             if (!ParseAll()) return false;
 
-            if (gui is null) gui = (ExeFile_CommandGUI)ExeFile_CommandGUI.Get(this);
-            //if (!Plugin.settings.enabled.value) return Functions.Error("Python is disabled. ");
-            //if (!File.Exists(Plugin.settings.executable_path.Value)) return Functions.Error("Python executable not found. ");
-            if (!TextCommand.ParseText(gui.ExecutableFileName, ref executableFileName, Recipe.variables)) return false;
+            if (!TextCommand.ParseText(executable_file_name.Value, ref executableFileName, Recipe.variables)) return false;
             if (!File.Exists(executableFileName)) return Functions.Error("Script file not found. ");
-            if (!TextCommand.ParseText(gui.ResultFileName, ref resultFileName, Recipe.variables)) return false;
+            if (!TextCommand.ParseText(result_file_name.Value, ref resultFileName, Recipe.variables)) return false;
 
             exportDataCommand.Compile();
             exportDataCommand.SetupWritter(tempFilePath);
@@ -192,7 +189,7 @@ namespace PythonCommandPlugin
                             if (process.ExitCode != 0)
                             {
                                 //Base.Functions.Erro
-                                return Functions.ErrorF("Executable file '{0}' failed to run. Exit code: {1}. ", Path.GetFileName(executableFileName), process.ExitCode);
+                                return Functions.Error(this,"Executable file '{0}' failed to run. Exit code: {1}. ", Path.GetFileName(executable_file_name.Value), process.ExitCode);
                             }
                         }
                     }
@@ -206,7 +203,7 @@ namespace PythonCommandPlugin
             }
             catch (Exception ex)
             {
-                return Functions.ErrorF("Failed to run Executable File command. ", ex);
+                return Functions.Error(this,"Failed to run Executable File command. ", ex);
             }
 
             return true;

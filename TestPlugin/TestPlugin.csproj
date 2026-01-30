@@ -60,7 +60,6 @@
     <Compile Include="DistanceSensorGUI.Designer.cs">
       <DependentUpon>DistanceSensorGUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="DrawConePlugin.cs" />
     <Compile Include="DrawShape.cs" />
     <Compile Include="MyPoly.cs" />
     <Compile Include="Plugin.cs" />

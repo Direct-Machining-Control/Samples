@@ -1,4 +1,5 @@
 ﻿using Base;
+using Base.Devices.LaserParameters;
 using Core;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Windows.Forms;
 namespace LaserPlugin
 {
 
-    public class Command : Core.ICommand
+    public class Command : Core.ICommand, ILaserParameterSetter
     {
         Laser laser;
         public CommandParameters parameters;
@@ -31,6 +32,11 @@ namespace LaserPlugin
             parameters = new CommandParameters();
             Add(parameters);
         }
+
+        #region ILaserParameterSetter
+        public ILaserSettings DeviceSettings => laser.Settings;
+        public ILaserPrmFrequency Frequency => new ILaserPrmFrequency(LaserValueSetType.CanSetDirectly, laser?.LaserStatus.TriggerFrequency ?? 0);
+        #endregion
 
         // when user clicks on this command in recipe command list, this method is called
         public override Core.ICommandGUI GetGUI()

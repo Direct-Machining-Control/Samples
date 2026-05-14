@@ -16,6 +16,8 @@ namespace LaserPlugin
         Task monitoringThread = null;
         CancellationTokenSource tokenSource;
         CancellationToken cancellationToken;
+        public Settings Settings => settings;
+
         public Laser(Settings settings)
         {
             this.settings = settings;

@@ -1,4 +1,5 @@
 ﻿using Base;
+using Base.Devices.LaserParameters;
 using Base.Shapes;
 using Core;
 using Core.Commands;
@@ -124,7 +125,7 @@ namespace LaserPlugin
         }
 
     }
-    public class Laser_MPExtState : ActionCommand
+    public class Laser_MPExtState : ActionCommand, ILaserParameterSetter
     {
         public bool SetShutter { get; set; }
         public bool ShutterOpen { get; set; }
@@ -154,6 +155,11 @@ namespace LaserPlugin
         {
             this.laser = laser;
         }
+
+        #region ILaserParameterSetter
+        public ILaserSettings DeviceSettings => laser.Settings;
+        public ILaserPrmFrequency Frequency => new ILaserPrmFrequency(LaserValueSetType.CanSetDirectly, laser?.LaserStatus.TriggerFrequency ?? 0);
+        #endregion
 
         public bool NeedToSet =>
         SetShutter ||

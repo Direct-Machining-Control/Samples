@@ -443,5 +443,58 @@ namespace RemoteControl
                 fileUploadClient?.Disconnect();
             }
         }
+        bool jog1 = true;
+        private void buttonJog1_Click(object sender, EventArgs e)
+        {
+            string error_message = null;
+
+            if (jog1)
+            {
+                if (!client.AxisFreemove(axis1_letter.Text, (double)speed1.Value, ref error_message))
+                {
+                    System.Windows.Forms.MessageBox.Show("Unable to freemove axis. " + error_message); return;
+                }
+
+                buttonJog1.Text = "Stop";
+                jog1 = false;
+            }
+            else
+            {
+                if (!client.StopMotion(axis1_letter.Text, ref error_message))
+                {
+                    System.Windows.Forms.MessageBox.Show("Unable to freemove axis. " + error_message); return;
+                }
+
+                jog1 = true;
+                buttonJog1.Text = "Jog";
+            }
+        }
+
+        bool jog2 = true;
+        private void buttonJog2_Click(object sender, EventArgs e)
+        {
+            string error_message = null;
+
+            if (jog2)
+            {
+                if (!client.AxisFreemove(axis2_letter.Text, (double)speed2.Value, ref error_message))
+                {
+                    System.Windows.Forms.MessageBox.Show("Unable to freemove axis. " + error_message); return;
+                }
+
+                buttonJog2.Text = "Stop";
+                jog2 = false;
+            }
+            else
+            {
+                if (!client.StopMotion(axis2_letter.Text, ref error_message))
+                {
+                    System.Windows.Forms.MessageBox.Show("Unable to freemove axis. " + error_message); return;
+                }
+
+                jog2 = true;
+                buttonJog2.Text = "Jog";
+            }
+        }
     }
 }

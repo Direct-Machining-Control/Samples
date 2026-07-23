@@ -68,15 +68,22 @@
             this.previewDisconnectBtn = new System.Windows.Forms.Button();
             this.btnUploadFile = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.filePath = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.cbAllowOverwrite = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.filePath = new System.Windows.Forms.TextBox();
+            this.speed1 = new System.Windows.Forms.NumericUpDown();
+            this.speed2 = new System.Windows.Forms.NumericUpDown();
+            this.buttonJog2 = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.buttonJog1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.move1_to)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.move2_to)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.preview_pictureBox)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.speed1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.speed2)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonRun
@@ -166,9 +173,9 @@
             // 
             // buttonMove1
             // 
-            this.buttonMove1.Location = new System.Drawing.Point(289, 35);
+            this.buttonMove1.Location = new System.Drawing.Point(243, 35);
             this.buttonMove1.Name = "buttonMove1";
-            this.buttonMove1.Size = new System.Drawing.Size(53, 23);
+            this.buttonMove1.Size = new System.Drawing.Size(49, 23);
             this.buttonMove1.TabIndex = 8;
             this.buttonMove1.Text = "Move";
             this.buttonMove1.UseVisualStyleBackColor = true;
@@ -193,35 +200,42 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnCount = 6;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 88F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 59F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.36842F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.63158F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 77F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this.tableLayoutPanel1.Controls.Add(this.move1_to, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.label6, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.label5, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.buttonMove1, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.axis1_letter, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.actual_axis1_position, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.axis2_letter, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.move2_to, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.actual_axis2_position, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.buttonMove2, 3, 2);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 249);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.speed1, 4, 1);
+            this.tableLayoutPanel1.Controls.Add(this.speed2, 4, 2);
+            this.tableLayoutPanel1.Controls.Add(this.buttonJog2, 5, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label9, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.buttonJog1, 5, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 214);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(345, 93);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(416, 93);
             this.tableLayoutPanel1.TabIndex = 12;
             // 
             // move1_to
             // 
             this.move1_to.DecimalPlaces = 4;
-            this.move1_to.Location = new System.Drawing.Point(190, 35);
+            this.move1_to.Location = new System.Drawing.Point(163, 35);
             this.move1_to.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -233,13 +247,13 @@
             0,
             -2147483648});
             this.move1_to.Name = "move1_to";
-            this.move1_to.Size = new System.Drawing.Size(93, 20);
+            this.move1_to.Size = new System.Drawing.Size(74, 20);
             this.move1_to.TabIndex = 13;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(190, 0);
+            this.label6.Location = new System.Drawing.Point(163, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(50, 13);
             this.label6.TabIndex = 14;
@@ -275,7 +289,7 @@
             // move2_to
             // 
             this.move2_to.DecimalPlaces = 4;
-            this.move2_to.Location = new System.Drawing.Point(190, 67);
+            this.move2_to.Location = new System.Drawing.Point(163, 67);
             this.move2_to.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -287,7 +301,7 @@
             0,
             -2147483648});
             this.move2_to.Name = "move2_to";
-            this.move2_to.Size = new System.Drawing.Size(93, 20);
+            this.move2_to.Size = new System.Drawing.Size(74, 20);
             this.move2_to.TabIndex = 17;
             // 
             // actual_axis2_position
@@ -300,9 +314,9 @@
             // 
             // buttonMove2
             // 
-            this.buttonMove2.Location = new System.Drawing.Point(289, 67);
+            this.buttonMove2.Location = new System.Drawing.Point(243, 67);
             this.buttonMove2.Name = "buttonMove2";
-            this.buttonMove2.Size = new System.Drawing.Size(53, 23);
+            this.buttonMove2.Size = new System.Drawing.Size(49, 23);
             this.buttonMove2.TabIndex = 18;
             this.buttonMove2.Text = "Move";
             this.buttonMove2.UseVisualStyleBackColor = true;
@@ -483,23 +497,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "File Upload";
             // 
-            // filePath
-            // 
-            this.filePath.Location = new System.Drawing.Point(17, 37);
-            this.filePath.Name = "filePath";
-            this.filePath.Size = new System.Drawing.Size(217, 20);
-            this.filePath.TabIndex = 26;
-            this.filePath.Text = "MyFiles/Drawings";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(14, 20);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(185, 13);
-            this.label8.TabIndex = 27;
-            this.label8.Text = "Upload To (Relative or Absolute path)";
-            // 
             // cbAllowOverwrite
             // 
             this.cbAllowOverwrite.AutoSize = true;
@@ -511,6 +508,98 @@
             this.cbAllowOverwrite.TabIndex = 28;
             this.cbAllowOverwrite.Text = "Allow Overwrite File";
             this.cbAllowOverwrite.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(14, 20);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(185, 13);
+            this.label8.TabIndex = 27;
+            this.label8.Text = "Upload To (Relative or Absolute path)";
+            // 
+            // filePath
+            // 
+            this.filePath.Location = new System.Drawing.Point(17, 37);
+            this.filePath.Name = "filePath";
+            this.filePath.Size = new System.Drawing.Size(217, 20);
+            this.filePath.TabIndex = 26;
+            this.filePath.Text = "MyFiles/Drawings";
+            // 
+            // speed1
+            // 
+            this.speed1.DecimalPlaces = 4;
+            this.speed1.Location = new System.Drawing.Point(298, 35);
+            this.speed1.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.speed1.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.speed1.Name = "speed1";
+            this.speed1.Size = new System.Drawing.Size(71, 20);
+            this.speed1.TabIndex = 19;
+            this.speed1.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // speed2
+            // 
+            this.speed2.DecimalPlaces = 4;
+            this.speed2.Location = new System.Drawing.Point(298, 67);
+            this.speed2.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.speed2.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
+            this.speed2.Name = "speed2";
+            this.speed2.Size = new System.Drawing.Size(71, 20);
+            this.speed2.TabIndex = 20;
+            this.speed2.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // buttonJog2
+            // 
+            this.buttonJog2.Location = new System.Drawing.Point(375, 67);
+            this.buttonJog2.Name = "buttonJog2";
+            this.buttonJog2.Size = new System.Drawing.Size(38, 23);
+            this.buttonJog2.TabIndex = 21;
+            this.buttonJog2.Text = "Jog";
+            this.buttonJog2.UseVisualStyleBackColor = true;
+            this.buttonJog2.Click += new System.EventHandler(this.buttonJog2_Click);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(298, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(38, 13);
+            this.label9.TabIndex = 22;
+            this.label9.Text = "Speed";
+            // 
+            // buttonJog1
+            // 
+            this.buttonJog1.Location = new System.Drawing.Point(375, 35);
+            this.buttonJog1.Name = "buttonJog1";
+            this.buttonJog1.Size = new System.Drawing.Size(38, 23);
+            this.buttonJog1.TabIndex = 23;
+            this.buttonJog1.Text = "Jog";
+            this.buttonJog1.UseVisualStyleBackColor = true;
+            this.buttonJog1.Click += new System.EventHandler(this.buttonJog1_Click);
             // 
             // Form1
             // 
@@ -552,6 +641,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.preview_pictureBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.speed1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.speed2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -600,6 +691,11 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox filePath;
         private System.Windows.Forms.CheckBox cbAllowOverwrite;
+        private System.Windows.Forms.NumericUpDown speed1;
+        private System.Windows.Forms.NumericUpDown speed2;
+        private System.Windows.Forms.Button buttonJog2;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button buttonJog1;
     }
 }
 

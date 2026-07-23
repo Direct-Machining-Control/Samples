@@ -1312,6 +1312,31 @@ namespace RemoteControl
             }
             return true;
         }
+        /// <summary>
+        /// Starts free movement of an axis at the specified speed.
+        /// </summary>
+        /// <param name="axis_letter">Axis name</param>
+        /// <param name="speed">Movement speed</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if free movement has been started, otherwise false</returns>
+        public bool AxisFreemove(string axis_letter, double speed, ref string error_message)
+        {
+            string received = SendReceive(ns, string.Format("AXIS_FREEMOVE {0} {1}", axis_letter, speed.ToString(Format)));
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+        /// <summary>
+        /// Stops movement of an axis.
+        /// </summary>
+        /// <param name="axis_letter">Axis name</param>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if axis movement has been stopped, otherwise false</returns>
+        public bool StopMotion(string axis_letter, ref string error_message)
+        {
+            string received = SendReceive(ns, string.Format("AXIS_STOP {0}", axis_letter));
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
         #endregion
     } 
     /// <summary>

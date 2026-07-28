@@ -109,6 +109,7 @@ namespace PythonCommandPlugin
         public ExecutableFileCommand() : base(unique_name, friendly_name, description)
         {
             exportDataCommand = new Core.Commands.ExportDataCommand();
+            exportDataCommand.Parent = this;
             //exportDataCommand.end_of_line.Set(4);
             exportDataCommand.SetupWritter(tempFilePath);
             foreach (var prm in exportDataCommand.Parameters)
@@ -143,7 +144,7 @@ namespace PythonCommandPlugin
             if (!File.Exists(executableFileName)) return Functions.Error("Script file not found. ");
             if (!TextCommand.ParseText(gui.ResultFileName, ref resultFileName, Recipe.variables)) return false;
 
-            exportDataCommand.Compile();
+            if (!exportDataCommand.Compile()) return Functions.Error(this, "Failed to compile script arguments. {0}", Functions.GetLastErrorMessage());
             exportDataCommand.SetupWritter(tempFilePath);
 
             return true;

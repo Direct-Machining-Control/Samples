@@ -1337,8 +1337,31 @@ namespace RemoteControl
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
+
+        /// <summary>
+        /// Turns off background mode and displays the application in fullscreen
+        /// </summary>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if app changed state, otherwise false</returns>
+        public bool ShowApp(ref string error_message)
+        {
+            string received = SendReceive(ns, "SHOW_APP");
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
+        /// <summary>
+        /// Turns on background mode and minimizes the application to the Windows system tray
+        /// </summary>
+        /// <param name="error_message">Error message</param>
+        /// <returns>Returns true if app changed state, otherwise false</returns>
+        public bool HideApp(ref string error_message)
+        {
+            string received = SendReceive(ns, "HIDE_APP");
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
         #endregion
-    } 
+    }
     /// <summary>
     /// Data class used with RCMClient method AddLine
     /// </summary>

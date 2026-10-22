@@ -114,24 +114,23 @@ namespace RemoteControl
         NetworkStream ns;
         internal ulong run_count = 0;
         string last_response = null;
-        static IFormatProvider format = null;
         object locker = new object();
         public event RCMEventDelegate RCMEvent;
 
         string Response { get { return last_response; } }
 
-        static IFormatProvider Format
+        /// <summary>
+        /// Culture used for every number that goes on the wire.
+        /// <para>
+        /// The protocol always expects a dot as the decimal separator. Without this,
+        /// a machine running a locale that uses a comma (lt-LT, de-DE, fr-FR, ...)
+        /// would send "1,5" instead of "1.5" and the command would be rejected or
+        /// silently misinterpreted. Every number formatted into a command must use it.
+        /// </para>
+        /// </summary>
+        internal static IFormatProvider Format
         {
-            get
-            {
-                if (format == null)
-                {
-                    CultureInfo cn = new CultureInfo("en-US", false);
-                    cn.NumberFormat.NumberDecimalSeparator = ".";
-                    format = cn;
-                }
-                return format;
-            }
+            get { return CultureInfo.InvariantCulture; }
         }
 
         #region Communication
@@ -392,9 +391,16 @@ namespace RemoteControl
         /// <summary>
         /// Pauses recipe
         /// </summary>
-        /// <param name="wait_for_paused_state">Wait parameter</param>
+        /// <param name="wait_for_paused_state">
+        /// False returns as soon as the pause signal is accepted. True waits until the
+        /// recipe has actually reached the paused state.
+        /// </param>
         /// <param name="error_message">Error message</param>
-        /// <param name="timeout_ms">Timeout</param>
+        /// <param name="timeout_ms">
+        /// Maximum time to wait for the paused state, in milliseconds.
+        /// 0 (the default) waits indefinitely. Ignored when
+        /// <paramref name="wait_for_paused_state"/> is false.
+        /// </param>
         /// <returns>Returns true if recipe has been paused, otherwise false</returns>
         public bool RecipePause(bool wait_for_paused_state, ref string error_message, long timeout_ms = 0)
         {
@@ -404,10 +410,11 @@ namespace RemoteControl
             if (!wait_for_paused_state) return true; // pause signal is set, but might not be paused yet
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch(); sw.Start();
-            while (timeout_ms < 1 || sw.ElapsedMilliseconds < timeout_ms)
+            while (timeout_ms < 1 || sw.ElapsedMilliseconds < timeout_ms) // timeout_ms < 1 -> wait indefinitely
             {
-                if (!SendReceive(ns, "IS_PAUSED").StartsWith("IS_PAUSED 1")) return true;
-                Thread.Sleep(1);
+                // done as soon as the recipe reports that it IS paused
+                if (SendReceive(ns, "IS_PAUSED").StartsWith("IS_PAUSED 1")) return true;
+                Thread.Sleep(50);
             }
             error_message = "Recipe pause timeout. ";
             return false;
@@ -712,7 +719,8 @@ namespace RemoteControl
         /// <returns>Returns true if zone has been added, otherwise false</returns>
         public bool SetWorkingZone(int zone_id, double pos_x, double pos_y, double size_x, double size_y, ref string error_message)
         {
-            string received = SendReceive(ns, $"SET_WORKING_ZONE {zone_id} {pos_x} {pos_y} {size_x} {size_y}");
+            string received = SendReceive(ns, string.Format(Format, "SET_WORKING_ZONE {0} {1} {2} {3} {4}",
+                zone_id, pos_x, pos_y, size_x, size_y));
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
@@ -849,7 +857,8 @@ namespace RemoteControl
         /// <returns>Returns true if successfully transformed all geometry, otherwise false</returns>
         public bool SetTransform(double angle_deg, double offset_x, double offset_y, ref string error_message, double offset_z = 0, double rotation_point_x = 0, double rotation_point_y = 0)
         {
-            string received = SendReceive(ns, $"SET_TRANSFORM {angle_deg} {offset_x} {offset_y} {offset_z} {rotation_point_x} {rotation_point_y}");
+            string received = SendReceive(ns, string.Format(Format, "SET_TRANSFORM {0} {1} {2} {3} {4} {5}",
+                angle_deg, offset_x, offset_y, offset_z, rotation_point_x, rotation_point_y));
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
@@ -1063,6 +1072,61 @@ namespace RemoteControl
             }
             return true ;
         }
+
+        /// <summary>
+        /// Fits the view to the rectangle defined by two corner points (VIEW AREA). A small margin is kept around the area.
+        /// </summary>
+        /// <param name="x1">First corner point X</param>
+        /// <param name="y1">First corner point Y</param>
+        /// <param name="x2">Opposite corner point X</param>
+        /// <param name="y2">Opposite corner point Y</param>
+        /// <param name="error_message">Error message</param>
+        /// <param name="z">View center Z position. If null, current view center Z is kept</param>
+        /// <returns>Returns true if view has been changed, otherwise false</returns>
+        public bool ViewArea(double x1, double y1, double x2, double y2, ref string error_message, double? z = null)
+        {
+            return SendView(ref error_message, "AREA", z, x1, y1, x2, y2);
+        }
+
+        /// <summary>
+        /// Sets view center and zoom (VIEW CENTER_ZOOM). Visible length of the shorter view side is 1 / zoom.
+        /// </summary>
+        /// <param name="cx">View center X</param>
+        /// <param name="cy">View center Y</param>
+        /// <param name="zoom">Zoom value, must be greater than 0</param>
+        /// <param name="error_message">Error message</param>
+        /// <param name="cz">View center Z position. If null, current view center Z is kept</param>
+        /// <returns>Returns true if view has been changed, otherwise false</returns>
+        public bool ViewCenterZoom(double cx, double cy, double zoom, ref string error_message, double? cz = null)
+        {
+            return SendView(ref error_message, "CENTER_ZOOM", cz, cx, cy, zoom);
+        }
+
+        /// <summary>
+        /// Sets view center and visible area size (VIEW CENTER_SIZE). Area is fitted to the view aspect ratio.
+        /// </summary>
+        /// <param name="cx">View center X</param>
+        /// <param name="cy">View center Y</param>
+        /// <param name="width">Visible area width</param>
+        /// <param name="height">Visible area height</param>
+        /// <param name="error_message">Error message</param>
+        /// <param name="cz">View center Z position. If null, current view center Z is kept</param>
+        /// <returns>Returns true if view has been changed, otherwise false</returns>
+        public bool ViewCenterSize(double cx, double cy, double width, double height, ref string error_message, double? cz = null)
+        {
+            return SendView(ref error_message, "CENTER_SIZE", cz, cx, cy, width, height);
+        }
+
+        private bool SendView(ref string error_message, string option, double? z, params double[] values)
+        {
+            StringBuilder command = new StringBuilder("VIEW " + option);
+            foreach (double value in values) command.Append(' ').Append(value.ToString(Format));
+            if (z.HasValue) command.Append(' ').Append(z.Value.ToString(Format));
+
+            string received = SendReceive(ns, command.ToString());
+            if (!received.StartsWith("OK")) { error_message = received; return false; }
+            return true;
+        }
         /// <summary>
         /// Gets variable value
         /// </summary>
@@ -1161,7 +1225,7 @@ namespace RemoteControl
         /// <returns>Returns true if value has been set, otherwise false</returns>
         public bool SetOutput(string io_name, double new_value, ref string error_message)
         {
-            string received = SendReceive(ns, $"SET_OUTPUT {io_name} {new_value}");
+            string received = SendReceive(ns, string.Format(Format, "SET_OUTPUT {0} {1}", io_name, new_value));
             if (!received.StartsWith("OK")) { error_message = received; return false; }
             return true;
         }
@@ -1425,14 +1489,14 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("x1:{0} y1:{1} z1:{2} x2:{3} y2:{4} z2:{5}",
+            sb.AppendFormat(RCMClient.Format, "x1:{0} y1:{1} z1:{2} x2:{3} y2:{4} z2:{5}",
                             StartX, StartY, StartZ, EndX, EndY, EndZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:\"{0}\"", Title);
+                sb.AppendFormat(RCMClient.Format, " title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:\"{0}\"", Parent);
+                sb.AppendFormat(RCMClient.Format, " parent:\"{0}\"", Parent);
 
             return sb.ToString();
         }
@@ -1501,23 +1565,23 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("radius:{0} positioning.position_x:{1} positioning.position_y:{2} positioning.position_z:{3}",
+            sb.AppendFormat(RCMClient.Format, "radius:{0} positioning.position_x:{1} positioning.position_y:{2} positioning.position_z:{3}",
                             Radius, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:\"{0}\"", Title);
+                sb.AppendFormat(RCMClient.Format, " title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:\"{0}\"", Parent);
+                sb.AppendFormat(RCMClient.Format, " parent:\"{0}\"", Parent);
 
             if (StartAngle.HasValue)
-                sb.AppendFormat(" start_angle:{0}", StartAngle.Value);
+                sb.AppendFormat(RCMClient.Format, " start_angle:{0}", StartAngle.Value);
 
             if (Clockwise.HasValue)
-                sb.AppendFormat(" cw:{0}", Clockwise.Value);
+                sb.AppendFormat(RCMClient.Format, " cw:{0}", Clockwise.Value);
 
             if (ReferencePoint.HasValue)
-                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+                sb.AppendFormat(RCMClient.Format, " positioning.reference_xy:{0}", (int)ReferencePoint.Value);
 
             return sb.ToString();
         }
@@ -1588,20 +1652,20 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("size_x:{0} size_y:{1} positioning.position_x:{2} positioning.position_y:{3} positioning.position_z:{4}",
+            sb.AppendFormat(RCMClient.Format, "size_x:{0} size_y:{1} positioning.position_x:{2} positioning.position_y:{3} positioning.position_z:{4}",
                             SizeX, SizeY, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:\"{0}\"", Title);
+                sb.AppendFormat(RCMClient.Format, " title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:\"{0}\"", Parent);
+                sb.AppendFormat(RCMClient.Format, " parent:\"{0}\"", Parent);
 
             if (RotateZ.HasValue)
-                sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
+                sb.AppendFormat(RCMClient.Format, " rotate_z:{0}", RotateZ.Value);
 
             if (ReferencePoint.HasValue)
-                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+                sb.AppendFormat(RCMClient.Format, " positioning.reference_xy:{0}", (int)ReferencePoint.Value);
 
             return sb.ToString();
         }
@@ -1705,38 +1769,38 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("text:\"{0}\" font:\"{1}\" size:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
+            sb.AppendFormat(RCMClient.Format, "text:\"{0}\" font:\"{1}\" size:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
                             Text, Font, Size, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:\"{0}\"", Title);
+                sb.AppendFormat(RCMClient.Format, " title:\"{0}\"", Title);
 
             if (!string.IsNullOrWhiteSpace(Parent))
-                sb.AppendFormat(" parent:\"{0}\"", Parent);
+                sb.AppendFormat(RCMClient.Format, " parent:\"{0}\"", Parent);
 
             if (RotateZ.HasValue)
-                sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
+                sb.AppendFormat(RCMClient.Format, " rotate_z:{0}", RotateZ.Value);
 
             if (ReferencePoint.HasValue)
-                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+                sb.AppendFormat(RCMClient.Format, " positioning.reference_xy:{0}", (int)ReferencePoint.Value);
 
             if (FontBold.HasValue)
-                sb.AppendFormat(" font_bold:{0}", FontBold.Value);
+                sb.AppendFormat(RCMClient.Format, " font_bold:{0}", FontBold.Value);
 
             if (FontItalic.HasValue)
-                sb.AppendFormat(" font_italic:{0}", FontItalic.Value);
+                sb.AppendFormat(RCMClient.Format, " font_italic:{0}", FontItalic.Value);
 
             if (CustomSpacing.HasValue)
-                sb.AppendFormat(" custom_spacing:{0}", CustomSpacing.Value);
+                sb.AppendFormat(RCMClient.Format, " custom_spacing:{0}", CustomSpacing.Value);
 
             if (LetterSpacing.HasValue)
-                sb.AppendFormat(" letter_spacing:{0}", LetterSpacing.Value);
+                sb.AppendFormat(RCMClient.Format, " letter_spacing:{0}", LetterSpacing.Value);
 
             if (LineSpacing.HasValue)
-                sb.AppendFormat(" line_spacing:{0}", LineSpacing.Value);
+                sb.AppendFormat(RCMClient.Format, " line_spacing:{0}", LineSpacing.Value);
 
             if (HScale.HasValue)
-                sb.AppendFormat(" hscale:{0}", HScale.Value);
+                sb.AppendFormat(RCMClient.Format, " hscale:{0}", HScale.Value);
 
             return sb.ToString();
         }
@@ -1853,47 +1917,47 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("text:\"{0}\" format:\"{1}\" width:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
+            sb.AppendFormat(RCMClient.Format, "text:\"{0}\" format:\"{1}\" width:{2} positioning.position_x:{3} positioning.position_y:{4} positioning.position_z:{5}",
                             Text, Format, Width, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrEmpty(Title))
-                sb.AppendFormat(" title:\"{0}\"", Title);
+                sb.AppendFormat(RCMClient.Format, " title:\"{0}\"", Title);
 
             if (!string.IsNullOrEmpty(Parent))
-                sb.AppendFormat(" parent:\"{0}\"", Parent);
+                sb.AppendFormat(RCMClient.Format, " parent:\"{0}\"", Parent);
 
             if (RotateZ.HasValue)
-                sb.AppendFormat(" rotate_z:{0}", RotateZ.Value);
+                sb.AppendFormat(RCMClient.Format, " rotate_z:{0}", RotateZ.Value);
 
             if (ReferencePoint.HasValue)
-                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+                sb.AppendFormat(RCMClient.Format, " positioning.reference_xy:{0}", (int)ReferencePoint.Value);
 
             if (PointMode.HasValue)
-                sb.AppendFormat(" point_mode:{0}", PointMode.Value);
+                sb.AppendFormat(RCMClient.Format, " point_mode:{0}", PointMode.Value);
 
             if (RenderPointAs.HasValue)
-                sb.AppendFormat(" renderPointsAs:{0}", (int)RenderPointAs.Value);
+                sb.AppendFormat(RCMClient.Format, " renderPointsAs:{0}", (int)RenderPointAs.Value);
 
             if (AspectRatio.HasValue)
-                sb.AppendFormat(" aspect:{0}", AspectRatio.Value);
+                sb.AppendFormat(RCMClient.Format, " aspect:{0}", AspectRatio.Value);
 
             if (Invert.HasValue)
-                sb.AppendFormat(" invert:{0}", Invert.Value);
+                sb.AppendFormat(RCMClient.Format, " invert:{0}", Invert.Value);
 
             if (NoOfPulses.HasValue)
-                sb.AppendFormat(" no_of_pulses:{0}", NoOfPulses.Value);
+                sb.AppendFormat(RCMClient.Format, " no_of_pulses:{0}", NoOfPulses.Value);
 
             if (Sorting.HasValue)
                 sb.Append($" sorting:\"{Sorting.Value}\"".Replace('_', ' '));
 
             if (PointSize.HasValue)
-                sb.AppendFormat(" pointSize:{0}", PointSize.Value);
+                sb.AppendFormat(RCMClient.Format, " pointSize:{0}", PointSize.Value);
 
             if (MarginSizeX.HasValue)
-                sb.AppendFormat(" marginSizeX:{0}", MarginSizeX.Value);
+                sb.AppendFormat(RCMClient.Format, " marginSizeX:{0}", MarginSizeX.Value);
 
             if (MarginSizeY.HasValue)
-                sb.AppendFormat(" marginSizeY:{0}", MarginSizeY.Value);
+                sb.AppendFormat(RCMClient.Format, " marginSizeY:{0}", MarginSizeY.Value);
 
             return sb.ToString();
         }
@@ -1939,7 +2003,7 @@ namespace RemoteControl
             sb.Append(base.ToString());
 
             if (GS1Format.HasValue)
-                sb.AppendFormat(" gs1format:{0}", GS1Format.Value);
+                sb.AppendFormat(RCMClient.Format, " gs1format:{0}", GS1Format.Value);
 
             return sb.ToString();
         }
@@ -2010,16 +2074,16 @@ namespace RemoteControl
             sb.Append(base.ToString());
 
             if (ForceRectangularCodeShape.HasValue)
-                sb.AppendFormat(" forceRectangularCodeShape:{0}", ForceRectangularCodeShape.Value);
+                sb.AppendFormat(RCMClient.Format, " forceRectangularCodeShape:{0}", ForceRectangularCodeShape.Value);
 
             if (SetCodeSize.HasValue)
-                sb.AppendFormat(" dmSetCodeSize:{0}", SetCodeSize.Value);
+                sb.AppendFormat(RCMClient.Format, " dmSetCodeSize:{0}", SetCodeSize.Value);
 
             if (CodeSizeIndex.HasValue)
-                sb.AppendFormat(" dmSetCodeSizeIndex:{0}", CodeSizeIndex.Value);
+                sb.AppendFormat(RCMClient.Format, " dmSetCodeSizeIndex:{0}", CodeSizeIndex.Value);
 
             if (Encodation.HasValue)
-                sb.AppendFormat(" dmEncodation:{0}", Encodation.Value);
+                sb.AppendFormat(RCMClient.Format, " dmEncodation:{0}", Encodation.Value);
 
             return sb.ToString();
         }
@@ -2072,10 +2136,10 @@ namespace RemoteControl
             sb.Append(base.ToString());
 
             if (ErrorCorrectionLevel.HasValue)
-                sb.AppendFormat(" errorCorrectionLevel:{0}", ErrorCorrectionLevel.Value);
+                sb.AppendFormat(RCMClient.Format, " errorCorrectionLevel:{0}", ErrorCorrectionLevel.Value);
 
             if (Version.HasValue)
-                sb.AppendFormat(" qrCodeVersion:{0}", Version.Value);
+                sb.AppendFormat(RCMClient.Format, " qrCodeVersion:{0}", Version.Value);
 
             return sb.ToString();
         }
@@ -2132,14 +2196,14 @@ namespace RemoteControl
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("radius:{0} positioning.position_x:{1} positioning.position_y:{2} positioning.position_z:{3}",
+            sb.AppendFormat(RCMClient.Format, "radius:{0} positioning.position_x:{1} positioning.position_y:{2} positioning.position_z:{3}",
                             RotaryRadius, PositionX, PositionY, PositionZ);
 
             if (!string.IsNullOrWhiteSpace(Title))
-                sb.AppendFormat(" title:{0}", Title);
+                sb.AppendFormat(RCMClient.Format, " title:{0}", Title);
 
             if (ReferencePoint.HasValue)
-                sb.AppendFormat(" positioning.reference_xy:{0}", (int)ReferencePoint.Value);
+                sb.AppendFormat(RCMClient.Format, " positioning.reference_xy:{0}", (int)ReferencePoint.Value);
 
             return sb.ToString();
         }
